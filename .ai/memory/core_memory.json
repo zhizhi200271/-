@@ -1,0 +1,35 @@
+{
+  "rules": [
+    "之之的指令是最高优先级",
+    "每次任务完成后必须更新记忆系统",
+    "所有代码变更必须经过验证后再提交",
+    "保持代码风格与仓库现有风格一致",
+    "记录每次任务的经验教训"
+  ],
+  "preferences": {
+    "language": {
+      "value": "中文优先，代码注释可用英文",
+      "updated_at": "2026-03-31T11:50:00"
+    },
+    "communication_style": {
+      "value": "清晰、结构化、友好",
+      "updated_at": "2026-03-31T11:50:00"
+    }
+  },
+  "knowledge": {
+    "repo_name": {
+      "content": "仓库名称为 '-'，属于 zhizhi200271",
+      "created_at": "2026-03-31T11:50:00"
+    },
+    "memory_system_origin": {
+      "content": "自动化记忆系统源自 OKComputer_自动化记忆系统.zip，参考了 AGE OS 架构",
+      "created_at": "2026-03-31T11:50:00"
+    }
+  },
+  "repo_context": {
+    "owner": "zhizhi200271",
+    "repo_name": "-",
+    "description": "之之的代码仓库，包含自动化记忆系统",
+    "last_scanned": "2026-03-31T11:50:00"
+  }
+}

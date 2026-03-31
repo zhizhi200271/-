@@ -1,0 +1,90 @@
+{
+  "patterns": {
+    "Copilot记忆持久化": {
+      "description": "通过 .github/copilot-instructions.md 指引 Copilot 读取 JSON 文件实现跨会话记忆",
+      "example": "copilot-instructions.md + .ai/memory/*.json",
+      "frequency": 1,
+      "last_seen": "2026-03-31T11:56:43.529736"
+    },
+    "Python仪表盘生成": {
+      "description": "使用 Python 脚本读取 JSON 数据生成 Markdown 格式仪表盘写入 README.md",
+      "example": "python3 .ai/generate_dashboard.py .",
+      "frequency": 1,
+      "last_seen": "2026-03-31T11:56:43.530247"
+    }
+  },
+  "solutions": {
+    "SOL-0001": {
+      "problem": "AI 助手在不同会话间无法保持记忆",
+      "solution": "使用 JSON 文件持久化记忆数据，通过 copilot-instructions.md 指引自动加载",
+      "tags": [
+        "memory",
+        "persistence",
+        "copilot"
+      ],
+      "created_at": "2026-03-31T11:56:43.530837",
+      "used_count": 0
+    }
+  },
+  "best_practices": [
+    {
+      "practice": "任务完成后立即记录经验到记忆系统",
+      "category": "workflow",
+      "added_at": "2026-03-31T11:50:00"
+    },
+    {
+      "practice": "修改代码前先理解现有架构和测试",
+      "category": "development",
+      "added_at": "2026-03-31T11:50:00"
+    },
+    {
+      "practice": "使用 JSON 文件持久化所有系统状态",
+      "category": "architecture",
+      "added_at": "2026-03-31T11:50:00"
+    },
+    {
+      "practice": "JSON 持久化适合小型记忆系统，无需外部依赖",
+      "category": "development",
+      "added_at": "2026-03-31T11:56:43.528084"
+    },
+    {
+      "practice": "copilot-instructions.md 是 Copilot 自动加载的配置入口",
+      "category": "development",
+      "added_at": "2026-03-31T11:56:43.528275"
+    },
+    {
+      "practice": "仪表盘可通过 Python 脚本自动从 JSON 数据生成",
+      "category": "development",
+      "added_at": "2026-03-31T11:56:43.528519"
+    },
+    {
+      "practice": "记忆系统需要同时支持读取和写入，保持数据一致性",
+      "category": "development",
+      "added_at": "2026-03-31T11:56:43.528753"
+    },
+    {
+      "practice": "系统架构应该模块化，便于后续扩展",
+      "category": "development",
+      "added_at": "2026-03-31T11:56:43.529120"
+    }
+  ],
+  "error_patterns": {},
+  "tech_stack": {
+    "Python": {
+      "usage": "记忆系统核心引擎",
+      "last_used": "2026-03-31T11:50:00"
+    },
+    "JSON": {
+      "usage": "数据持久化存储格式",
+      "last_used": "2026-03-31T11:50:00"
+    },
+    "GitHub Copilot": {
+      "usage": "AI 编程助手，记忆系统运行环境",
+      "last_used": "2026-03-31T11:50:00"
+    },
+    "Markdown": {
+      "usage": "仓库文档和仪表盘展示",
+      "last_used": "2026-03-31T11:56:43.531450"
+    }
+  }
+}
