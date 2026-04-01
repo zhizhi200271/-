@@ -91,11 +91,17 @@ irm https://raw.githubusercontent.com/zhizhi200271/-/main/github-desktop-zh-CN/s
 **macOS**（默认安装路径）：
 
 ```bash
-cp "/Applications/GitHub Desktop.app/Contents/Resources/app.asar.zh-cn-backup" \
+# 如果有 app.asar（打包模式）
+sudo cp "/Applications/GitHub Desktop.app/Contents/Resources/app.asar.zh-cn-backup" \
    "/Applications/GitHub Desktop.app/Contents/Resources/app.asar"
+
+# 如果是 app 目录（未打包模式）
+sudo rm -rf "/Applications/GitHub Desktop.app/Contents/Resources/app" && \
+sudo cp -R "/Applications/GitHub Desktop.app/Contents/Resources/app.zh-cn-backup" \
+   "/Applications/GitHub Desktop.app/Contents/Resources/app"
 ```
 
-> 💡 备份文件名固定为 `app.asar.zh-cn-backup`，与 `app.asar` 在同一目录下。Linux 用户请替换为实际的 GitHub Desktop 安装路径。
+> 💡 备份文件名固定为 `.zh-cn-backup` 后缀，与原文件在同一目录下。修改 `/Applications/` 下的文件通常需要 `sudo`。Linux 用户请替换为实际的 GitHub Desktop 安装路径。
 
 ---
 

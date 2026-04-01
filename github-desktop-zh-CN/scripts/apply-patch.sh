@@ -87,7 +87,7 @@ if ! [ -w "$WRITE_TEST_DIR" ]; then
     if ! sudo -v 2>/dev/null; then
         fail "无法获取管理员权限！"
         warn "请尝试以下方式运行："
-        warn "  curl -fsSL <脚本URL> -o /tmp/apply-patch.sh && sudo bash /tmp/apply-patch.sh"
+        warn "  curl -fsSL https://raw.githubusercontent.com/zhizhi200271/-/main/github-desktop-zh-CN/scripts/apply-patch.sh -o /tmp/apply-patch.sh && sudo bash /tmp/apply-patch.sh"
         exit 1
     fi
 fi
