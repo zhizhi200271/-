@@ -24,6 +24,7 @@ def generate_dashboard(repo_root="."):
     tasks = load_json(os.path.join(mem, "task_history.json"), {"tasks": []})
     experience = load_json(os.path.join(mem, "experience_db.json"), {})
     updates = load_json(os.path.join(mem, "update_log.json"), {"updates": []})
+    commands = load_json(os.path.join(mem, "master_commands.json"), {"commands": []})
 
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
 
@@ -41,6 +42,9 @@ def generate_dashboard(repo_root="."):
     version = state.get("version", "v1.0.0")
     status = state.get("status", "initialized")
 
+    # 主控指令统计
+    total_commands = len(commands.get("commands", []))
+
     # 数据文件检查
     data_files = [
         "system_state.json",
@@ -48,6 +52,7 @@ def generate_dashboard(repo_root="."):
         "task_history.json",
         "experience_db.json",
         "update_log.json",
+        "master_commands.json",
     ]
     files_ok = sum(
         1 for f in data_files if os.path.exists(os.path.join(mem, f))
@@ -87,6 +92,7 @@ def generate_dashboard(repo_root="."):
     lines.append(f"| 💚 **健康** | {health} |")
     lines.append(f"| 🔄 **启动次数** | {boot_count} |")
     lines.append(f"| 📋 **历史任务** | {total_tasks} |")
+    lines.append(f"| 📢 **主控指令** | {total_commands} |")
     lines.append(f"| 📝 **系统更新** | {total_updates} |")
     lines.append("")
 
@@ -115,12 +121,51 @@ def generate_dashboard(repo_root="."):
         "task_history.json": "开发任务历史",
         "experience_db.json": "经验数据库",
         "update_log.json": "系统更新日志",
+        "master_commands.json": "主控指令记录",
     }
     for f in data_files:
         ok = os.path.exists(os.path.join(mem, f))
         icon = "✅" if ok else "❌"
         lines.append(f"| `{f}` | {icon} | {desc_map.get(f, '')} |")
     lines.append("")
+
+    # ── 主控指令板 ──
+    all_commands = commands.get("commands", [])
+    if all_commands:
+        latest_cmd = all_commands[-1]
+        cmd_status = "✅ 已执行" if latest_cmd.get("status") == "completed" else "🔄 执行中" if latest_cmd.get("status") == "in_progress" else "⏳ 待执行"
+        lines.append("### 📢 主控指令板")
+        lines.append("")
+        lines.append(f"> 💬 **最新指令** — {latest_cmd.get('instruction', '')}")
+        lines.append("")
+        lines.append("| 属性 | 内容 |")
+        lines.append("|------|------|")
+        lines.append(f"| 🆔 指令编号 | {latest_cmd.get('id', '')} |")
+        lines.append(f"| 📅 下达时间 | {latest_cmd.get('timestamp', '')[:19]} |")
+        lines.append(f"| 📋 指令摘要 | {latest_cmd.get('summary', '')} |")
+        lines.append(f"| 📊 执行状态 | {cmd_status} |")
+        lines.append(f"| 🔗 关联任务 | {latest_cmd.get('task_id', 'N/A')} |")
+        lines.append("")
+
+        # 执行结果
+        response = latest_cmd.get("response", "")
+        if response:
+            lines.append(f"**🤖 执行结果：** {response}")
+            lines.append("")
+
+        # 最近指令历史
+        recent_cmds = all_commands[-5:]
+        if len(recent_cmds) > 1:
+            lines.append("**📜 最近指令历史：**")
+            lines.append("")
+            lines.append("| ID | 时间 | 指令摘要 | 状态 |")
+            lines.append("|----|------|---------|------|")
+            for cmd in reversed(recent_cmds):
+                ts = cmd.get("timestamp", "")[:16]
+                summary = cmd.get("summary", "")[:50]
+                s = "✅" if cmd.get("status") == "completed" else "🔄" if cmd.get("status") == "in_progress" else "⏳"
+                lines.append(f"| {cmd.get('id', '')} | {ts} | {summary} | {s} |")
+            lines.append("")
 
     # ── 最新任务详情 ──
     all_tasks = tasks.get("tasks", [])
@@ -305,6 +350,7 @@ def generate_dashboard(repo_root="."):
     lines.append("│       ├── core_memory.json          # 核心记忆")
     lines.append("│       ├── task_history.json         # 任务历史")
     lines.append("│       ├── experience_db.json        # 经验数据库")
+    lines.append("│       ├── master_commands.json      # 主控指令记录")
     lines.append("│       └── update_log.json           # 更新日志")
     lines.append("```")
     lines.append("")

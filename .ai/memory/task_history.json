@@ -85,6 +85,35 @@
         "enhancement",
         "ux"
       ]
+    },
+    {
+      "id": "TASK-0004",
+      "timestamp": "2026-04-01T13:41:28",
+      "description": "添加「主控指令板」功能到仪表盘：新增 master_commands.json 追踪主控指令，仪表盘实时展示之之下达的每条指令及其执行状态和结果，同步更新首页方便查阅；同时记录 GitHub Copilot Pro 订阅信息到知识库",
+      "type": "enhancement",
+      "files_changed": [
+        ".ai/generate_dashboard.py",
+        ".ai/memory/master_commands.json",
+        ".ai/memory/task_history.json",
+        ".ai/memory/update_log.json",
+        ".ai/memory/system_state.json",
+        ".ai/memory/core_memory.json",
+        ".ai/memory/experience_db.json",
+        "README.md"
+      ],
+      "outcome": "completed",
+      "lessons_learned": [
+        "主控指令需要独立追踪，与任务历史分离但关联",
+        "仪表盘应实时反映主控最新指令及执行状态",
+        "GitHub Copilot Pro 对话次数无固定硬限制，但高级模型有配额",
+        "新增数据文件后需同步更新仪表盘生成器和文件结构说明"
+      ],
+      "tags": [
+        "dashboard",
+        "command-tracking",
+        "copilot-pro",
+        "enhancement"
+      ]
     }
   ]
 }

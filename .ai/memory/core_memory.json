@@ -28,6 +28,10 @@
     "github_desktop_zh_cn": {
       "content": "GitHub Desktop 3.5.7 中文语言包已开发完成，存放在 github-desktop-zh-CN/ 目录，Actions 自动构建",
       "created_at": "2026-04-01T03:44:05.753469"
+    },
+    "copilot_pro_subscription": {
+      "content": "之之已开通 GitHub Copilot Pro 版本。Copilot Pro 无固定的月度对话次数硬限制，但使用高级模型（如 Claude Sonnet 4、GPT-4.1 等）时有每日/每月配额限制。基础模型（如 GPT-4o）不限次数。具体配额可在 github.com/settings/copilot 查看",
+      "created_at": "2026-04-01T13:41:28"
     }
   },
   "repo_context": {
