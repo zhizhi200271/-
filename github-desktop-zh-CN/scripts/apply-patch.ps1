@@ -34,7 +34,7 @@ function Find-GitHubDesktop {
     $searchPaths = @(
         "$env:LOCALAPPDATA\GitHubDesktop\app-$version",
         "$env:PROGRAMFILES\GitHub Desktop",
-        "$env:PROGRAMFILES(x86)\GitHub Desktop"
+        "${env:ProgramFiles(x86)}\GitHub Desktop"
     )
 
     foreach ($path in $searchPaths) {
@@ -94,15 +94,23 @@ function Install-AsarTool {
 # ── 获取翻译文件路径 ──────────────────────────────────────────
 function Get-TranslationsPath {
     # 优先从仓库本地读取（如果用户克隆了仓库）
-    $scriptDir = Split-Path -Parent $MyInvocation.ScriptName
-    $localPath = Join-Path $scriptDir "..\translations\zh-CN.json"
-    if (Test-Path $localPath) {
-        return (Resolve-Path $localPath).Path
+    $scriptDir = ""
+    if ($MyInvocation.ScriptName) {
+        $scriptDir = Split-Path -Parent $MyInvocation.ScriptName
     }
+    if (-not $scriptDir) {
+        $scriptDir = $PSScriptRoot
+    }
+    if ($scriptDir) {
+        $localPath = Join-Path $scriptDir "..\translations\zh-CN.json"
+        if (Test-Path $localPath) {
+            return (Resolve-Path $localPath).Path
+        }
 
-    # 从脚本同级目录读取
-    $samePath = Join-Path $scriptDir "zh-CN.json"
-    if (Test-Path $samePath) { return $samePath }
+        # 从脚本同级目录读取
+        $samePath = Join-Path $scriptDir "zh-CN.json"
+        if (Test-Path $samePath) { return $samePath }
+    }
 
     # 从 GitHub 下载最新翻译
     Write-Info "正在从 GitHub 下载最新翻译文件..."
@@ -127,7 +135,6 @@ function Apply-StringPatches {
     )
 
     $content = [System.IO.File]::ReadAllText($filePath, [System.Text.Encoding]::UTF8)
-    $originalLength = $content.Length
     $count = 0
 
     foreach ($entry in $translations.GetEnumerator()) {
@@ -148,15 +155,14 @@ function Apply-StringPatches {
         $escaped = [regex]::Escape($en)
 
         # 双引号字符串匹配
-        $before = $content.Length
+        $before = $content
         $content = $content -replace "(?<=[""'])$escaped(?=[""'])", $zh
-        if ($content.Length -ne $before -or $content.Contains($zh)) {
-            $occurrences = ([regex]::Matches($content, [regex]::Escape($zh))).Count
-            if ($occurrences -gt 0) { $count++ }
+        if ($content -ne $before) {
+            $count++
         }
     }
 
-    if ($count -gt 0 -or $content.Length -ne $originalLength) {
+    if ($count -gt 0) {
         [System.IO.File]::WriteAllText($filePath, $content, [System.Text.Encoding]::UTF8)
         Write-OK "  已替换 $count 处字符串: $(Split-Path -Leaf $filePath)"
     }
@@ -315,12 +321,23 @@ if ($useAsar -and $totalReplaced -gt 0) {
 
 Write-Title "步骤 6/6: 设置自动重打补丁（GitHub Desktop 更新后自动恢复中文）"
 
-# 创建自动重打补丁的计划任务
-$taskScript = @"
+# 获取当前脚本路径（兼容 irm | iex 管道调用）
+$currentScriptPath = $MyInvocation.MyCommand.Path
+if (-not $currentScriptPath) {
+    $currentScriptPath = $PSCommandPath
+}
+
+if (-not $currentScriptPath) {
+    Write-Warn "当前通过管道执行，无法获取脚本路径"
+    Write-Warn "跳过自动重打补丁计划任务的注册"
+    Write-Warn "GitHub Desktop 更新后请手动重新运行此脚本"
+} else {
+    # 创建自动重打补丁的计划任务
+    $taskScript = @"
 # 自动重打补丁检测脚本 - 由铸码生成
 `$asarPath = "$asarPath"
 `$backupPath = "$($asarPath).zh-cn-backup"
-`$patchScript = "$($MyInvocation.MyCommand.Path)"
+`$patchScript = "$currentScriptPath"
 
 # 如果 asar 比备份新（说明 GitHub Desktop 已更新），重新应用补丁
 if ((Test-Path `$asarPath) -and (Test-Path `$backupPath)) {
@@ -332,20 +349,21 @@ if ((Test-Path `$asarPath) -and (Test-Path `$backupPath)) {
 }
 "@
 
-$autoScriptPath = "$env:APPDATA\github-desktop-zh-cn-auto.ps1"
-$taskScript | Out-File $autoScriptPath -Encoding UTF8
+    $autoScriptPath = "$env:APPDATA\github-desktop-zh-cn-auto.ps1"
+    $taskScript | Out-File $autoScriptPath -Encoding UTF8
 
-# 注册计划任务（登录时检查）
-try {
-    $trigger = New-ScheduledTaskTrigger -AtLogOn
-    $action = New-ScheduledTaskAction -Execute "powershell" -Argument "-WindowStyle Hidden -File `"$autoScriptPath`""
-    $settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit (New-TimeSpan -Minutes 5)
-    $principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -RunLevel Highest
-    Register-ScheduledTask -TaskName "GitHubDesktop-ZhCN-AutoPatch" -Trigger $trigger -Action $action -Settings $settings -Principal $principal -Force -ErrorAction SilentlyContinue | Out-Null
-    Write-OK "已注册开机自动重打补丁任务"
-} catch {
-    Write-Warn "无法注册计划任务（需要管理员权限）: $_"
-    Write-Warn "GitHub Desktop 更新后请手动重新运行此脚本"
+    # 注册计划任务（登录时检查）
+    try {
+        $trigger = New-ScheduledTaskTrigger -AtLogOn
+        $action = New-ScheduledTaskAction -Execute "powershell" -Argument "-WindowStyle Hidden -File `"$autoScriptPath`""
+        $settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit (New-TimeSpan -Minutes 5)
+        $principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -RunLevel Highest
+        Register-ScheduledTask -TaskName "GitHubDesktop-ZhCN-AutoPatch" -Trigger $trigger -Action $action -Settings $settings -Principal $principal -Force -ErrorAction SilentlyContinue | Out-Null
+        Write-OK "已注册开机自动重打补丁任务"
+    } catch {
+        Write-Warn "无法注册计划任务（需要管理员权限）: $_"
+        Write-Warn "GitHub Desktop 更新后请手动重新运行此脚本"
+    }
 }
 
 Write-Title "`n════════════════════════════════════════════════════"
