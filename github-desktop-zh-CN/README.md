@@ -28,9 +28,10 @@ irm https://raw.githubusercontent.com/zhizhi200271/-/main/github-desktop-zh-CN/s
 curl -fsSL https://raw.githubusercontent.com/zhizhi200271/-/main/github-desktop-zh-CN/scripts/apply-patch.sh | bash
 ```
 
-3. **关闭并重新打开 GitHub Desktop** → 界面变为中文 ✅
+3. 脚本会提示输入密码（修改 `/Applications/` 下的文件需要管理员权限）
+4. **关闭并重新打开 GitHub Desktop** → 界面变为中文 ✅
 
-> 💡 **就这么简单！** 脚本会自动下载翻译文件、备份原文件、应用中文补丁。
+> 💡 **就这么简单！** 脚本会自动下载翻译文件、备份原文件、应用中文补丁。需要 `sudo` 权限写入 `/Applications/` 目录。
 
 ---
 
@@ -116,6 +117,13 @@ A：访问 https://nodejs.org/zh-cn/ → 下载 LTS 版本 → 安装 → 重新
 A：确保用 **管理员身份** 打开 PowerShell。如果仍有问题，先运行：
 ```powershell
 Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```
+
+### Q：macOS 运行时提示 `EPERM: operation not permitted` 怎么办？
+
+A：这是因为 macOS 需要管理员权限才能修改 `/Applications/` 下的文件。最新版脚本已自动处理，会提示输入密码。如果仍有问题，可以先下载脚本再用 `sudo` 运行：
+```bash
+curl -fsSL https://raw.githubusercontent.com/zhizhi200271/-/main/github-desktop-zh-CN/scripts/apply-patch.sh -o /tmp/apply-patch.sh && sudo bash /tmp/apply-patch.sh
 ```
 
 ### Q：Actions 构建失败怎么办？
