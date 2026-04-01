@@ -6,6 +6,24 @@
 
 ---
 
+## 🇨🇳 GitHub Desktop 简体中文语言包
+
+一键汉化 GitHub Desktop 3.5.7，支持 Windows / macOS / Linux。
+
+> ⚠️ **前置条件**：需要先安装 [Node.js](https://nodejs.org/zh-cn/)。详细说明见 [**中文语言包文档**](github-desktop-zh-CN/README.md)。
+
+**Windows 安装**（管理员 PowerShell）：
+```powershell
+irm https://raw.githubusercontent.com/zhizhi200271/-/main/github-desktop-zh-CN/scripts/apply-patch.ps1 | iex
+```
+
+**macOS / Linux 安装**（终端）：
+```bash
+curl -fsSL https://raw.githubusercontent.com/zhizhi200271/-/main/github-desktop-zh-CN/scripts/apply-patch.sh | bash
+```
+
+---
+
 ## 📊 系统仪表盘
 
 | 项目 | 状态 |
