@@ -60,6 +60,31 @@
         "github-actions",
         "automation"
       ]
+    },
+    {
+      "id": "TASK-0003",
+      "timestamp": "2026-04-01T13:28:36.424091",
+      "description": "增强仪表盘展示功能：添加「最新任务详情」区块，展示完整的任务描述、变更文件、经验教训、标签等信息，同步更新首页仪表盘，方便主控之之查阅每次任务的详细情况",
+      "type": "enhancement",
+      "files_changed": [
+        ".ai/generate_dashboard.py",
+        ".ai/memory/task_history.json",
+        ".ai/memory/update_log.json",
+        ".ai/memory/system_state.json",
+        "README.md"
+      ],
+      "outcome": "completed",
+      "lessons_learned": [
+        "仪表盘需要展示足够的任务详情，方便主控查阅",
+        "任务描述截断长度应适当增大以保留完整信息",
+        "最新任务应单独展示为详情卡片，包含变更文件和经验教训",
+        "仪表盘更新与任务执行应同步进行，保持数据一致性"
+      ],
+      "tags": [
+        "dashboard",
+        "enhancement",
+        "ux"
+      ]
     }
   ]
 }

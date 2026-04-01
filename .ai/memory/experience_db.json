@@ -85,7 +85,8 @@
     },
     "Electron 应用汉化：使用 @electron/asar 工具解包/重打包，字符串替换用正则匹配引号包裹的字面量",
     "GitHub Actions Release 自动化：用 softprops/action-gh-release + upload-artifact 实现自动发布",
-    "补丁脚本要自动备份原文件并支持一键恢复，降低用户风险"
+    "补丁脚本要自动备份原文件并支持一键恢复，降低用户风险",
+    "仪表盘最新任务应以详情卡片展示，包含完整描述、变更文件、经验教训和标签，方便主控查阅"
   ],
   "error_patterns": {},
   "tech_stack": {

@@ -122,17 +122,61 @@ def generate_dashboard(repo_root="."):
         lines.append(f"| `{f}` | {icon} | {desc_map.get(f, '')} |")
     lines.append("")
 
+    # ── 最新任务详情 ──
+    all_tasks = tasks.get("tasks", [])
+    if all_tasks:
+        latest = all_tasks[-1]
+        outcome_icon = "✅ 已完成" if latest.get("outcome") == "completed" else "🔄 进行中" if latest.get("outcome") == "in_progress" else "❌ 失败"
+        lines.append("### 📌 最新任务详情")
+        lines.append("")
+        lines.append(f"> **{latest.get('id', '')}** — {latest.get('description', '')}")
+        lines.append("")
+        lines.append("| 属性 | 内容 |")
+        lines.append("|------|------|")
+        lines.append(f"| 🆔 任务编号 | {latest.get('id', '')} |")
+        lines.append(f"| 📝 任务描述 | {latest.get('description', '')} |")
+        lines.append(f"| 🏷️ 任务类型 | {latest.get('type', 'N/A')} |")
+        lines.append(f"| 📅 执行时间 | {latest.get('timestamp', '')[:19]} |")
+        lines.append(f"| 📊 执行结果 | {outcome_icon} |")
+        lines.append("")
+
+        # 变更文件
+        files = latest.get("files_changed", [])
+        if files:
+            lines.append("**📂 变更文件：**")
+            lines.append("")
+            for fpath in files:
+                lines.append(f"- `{fpath}`")
+            lines.append("")
+
+        # 经验教训
+        lessons = latest.get("lessons_learned", [])
+        if lessons:
+            lines.append("**💡 经验教训：**")
+            lines.append("")
+            for lesson in lessons:
+                lines.append(f"- {lesson}")
+            lines.append("")
+
+        # 标签
+        tags = latest.get("tags", [])
+        if tags:
+            tag_badges = " ".join(f"`{tag}`" for tag in tags)
+            lines.append(f"**🏷️ 标签：** {tag_badges}")
+            lines.append("")
+
     # ── 最近任务 ──
     if recent_tasks:
         lines.append("### 📋 最近任务")
         lines.append("")
-        lines.append("| ID | 时间 | 描述 | 结果 |")
-        lines.append("|----|------|------|------|")
+        lines.append("| ID | 时间 | 类型 | 描述 | 结果 |")
+        lines.append("|----|------|------|------|------|")
         for t in reversed(recent_tasks):
             ts = t.get("timestamp", "")[:16]
-            desc = t.get("description", "")[:40]
+            desc = t.get("description", "")[:60]
+            task_type = t.get("type", "")
             outcome = "✅" if t.get("outcome") == "completed" else "❌"
-            lines.append(f"| {t.get('id', '')} | {ts} | {desc} | {outcome} |")
+            lines.append(f"| {t.get('id', '')} | {ts} | {task_type} | {desc} | {outcome} |")
         lines.append("")
 
     # ── 最近更新 ──
