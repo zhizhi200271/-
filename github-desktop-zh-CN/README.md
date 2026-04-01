@@ -4,153 +4,110 @@
 
 ---
 
-## ✅ 可行性评估
+## 📋 当前状态
 
-**结论：完全可实现，已自动化集成。**
-
-| 评估项 | 结论 |
-|--------|------|
-| 技术可行性 | ✅ 可行：GitHub Desktop 是 Electron 应用，字符串可通过补丁替换 |
-| 自动化程度 | ✅ 全自动：翻译更新后 Actions 自动构建、自动发 Release |
-| 持久性 | ✅ 持久：Windows 计划任务确保更新后自动重打补丁 |
-| 翻译覆盖率 | ✅ 全面：覆盖菜单/主界面/对话框/状态信息共 ${{ TRANS_COUNT }} 条 |
-| 风险 | ⚠️ 低风险：原始文件自动备份，可一键恢复英文版 |
+| 项目 | 状态 |
+|------|------|
+| 翻译文件 | ✅ 已完成（500+ 条） |
+| Windows 补丁脚本 | ✅ 已完成 |
+| macOS 补丁脚本 | ✅ 已完成 |
+| 自动构建工作流 | ✅ 已完成 |
 
 ---
 
-## 🚀 安装方法
+## 🚀 之之的使用步骤（按顺序操作）
 
-### 方法一：一键在线安装（最简单，推荐）
+### 第一步：合并 PR，让代码进入主分支
 
-**Windows** — 以**管理员身份**打开 PowerShell，粘贴运行：
+1. 打开浏览器，进入：**https://github.com/zhizhi200271/-/pull/2**
+2. 如果看到 **"This pull request is still a draft"**，先点击 **"Ready for review"** 按钮
+3. 然后点击绿色的 **"Merge pull request"** → **"Confirm merge"**
+4. 合并完成，页面显示 "Pull request successfully merged and closed" ✅
+
+---
+
+### 第二步：等待 Actions 自动构建（约 1 分钟）
+
+合并后，GitHub Actions 会自动运行，步骤如下：
+
+1. 进入：**https://github.com/zhizhi200271/-/actions**
+2. 找到 **"🇨🇳 构建 GitHub Desktop 中文语言包"** 这条记录
+3. 等待它变成绿色 ✅（表示构建成功）
+4. 构建完成后，会自动在 Releases 页面发布中文安装包
+
+---
+
+### 第三步：在你的电脑上运行安装（一次性操作）
+
+**Windows 系统（推荐方法）：**
+
+1. 按 `Win + X`，选择 **"Windows PowerShell（管理员）"** 或 **"终端（管理员）"**
+2. 粘贴以下命令，按回车：
 
 ```powershell
 irm https://raw.githubusercontent.com/zhizhi200271/-/main/github-desktop-zh-CN/scripts/apply-patch.ps1 | iex
 ```
 
-**macOS** — 打开终端，粘贴运行：
+3. 脚本会自动完成所有操作（需要约 1~2 分钟）
+4. **关闭并重新打开 GitHub Desktop** → 界面变为中文 ✅
+
+> ⚠️ **前置条件**：需要安装 [Node.js](https://nodejs.org/zh-cn/)（免费，直接下一步安装即可）。如果没有安装，脚本会提示你。
+
+**macOS 系统：**
+
+打开"终端"，粘贴以下命令，按回车：
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/zhizhi200271/-/main/github-desktop-zh-CN/scripts/apply-patch.sh | bash
 ```
 
-### 方法二：从 GitHub Release 下载安装包
+---
 
-1. 进入本仓库 [Releases 页面](../../releases)
-2. 下载最新的 `github-desktop-zh-CN-v3.5.7.zip`
-3. 解压后运行对应系统的脚本
+### 第四步：之后无需任何操作
 
-### 方法三：克隆仓库后本地运行
-
-```bash
-# 克隆仓库
-git clone https://github.com/zhizhi200271/-.git
-cd -/github-desktop-zh-CN/scripts
-
-# Windows
-powershell -ExecutionPolicy Bypass -File apply-patch.ps1
-
-# macOS
-chmod +x apply-patch.sh && bash apply-patch.sh
-```
+- ✅ GitHub Desktop **自动更新**后：Windows 会通过系统计划任务**自动重新应用**中文
+- ✅ 翻译内容更新：Actions 自动重新构建，你只需重新运行一次第三步命令
 
 ---
 
-## 🔄 自动化工作流说明
+## ❓ 常见问题
 
-本语言包完全集成在仓库的 GitHub Actions 工作流中：
+### Q：运行命令时提示"找不到 Node.js"怎么办？
 
-```
-修改翻译文件 → 推送到 main
-       │
-       ▼
-┌─────────────────────────────┐
-│  Actions 自动触发            │
-│  ✅ 验证翻译文件格式          │
-│  📊 统计翻译条目数量          │
-└─────────────────────────────┘
-       │
-       ▼
-┌─────────────────────────────┐
-│  自动打包                    │
-│  📦 生成补丁包 ZIP           │
-│  📝 生成安装脚本             │
-│  📄 生成安装文档             │
-└─────────────────────────────┘
-       │
-       ▼
-┌─────────────────────────────┐
-│  自动发布 Release            │
-│  🚀 创建/更新 Release        │
-│  📥 上传 ZIP 附件            │
-│  📋 写入安装说明             │
-└─────────────────────────────┘
-```
+A：访问 https://nodejs.org/zh-cn/ → 下载 LTS 版本 → 安装完成后重新运行命令。
 
-**之之只需**：修改翻译文件并推送到 main → Actions 自动完成剩余所有工作。
+### Q：想恢复回英文界面怎么办？
 
----
+A：以管理员身份运行 PowerShell，执行：
 
-## 📋 手动干预步骤（之之必读）
-
-> 以下是需要您手动完成的操作，仅需**一次**：
-
-### 第一次使用（必须手动执行）
-
-**步骤 1：以管理员身份运行 PowerShell**
-1. 按 `Win + X`
-2. 选择「Windows PowerShell（管理员）」或「终端（管理员）」
-
-**步骤 2：粘贴并运行一键安装命令**
 ```powershell
-irm https://raw.githubusercontent.com/zhizhi200271/-/main/github-desktop-zh-CN/scripts/apply-patch.ps1 | iex
+irm https://raw.githubusercontent.com/zhizhi200271/-/main/github-desktop-zh-CN/scripts/restore.ps1 | iex
 ```
 
-**步骤 3：等待脚本完成**
-- 脚本会自动：找到 GitHub Desktop 安装目录 → 备份原文件 → 应用中文补丁 → 设置自动更新守护
+### Q：Actions 构建失败或显示"action required"怎么办？
 
-**步骤 4：重启 GitHub Desktop**
-- 关闭 GitHub Desktop → 重新打开
-- 界面即显示简体中文 ✅
+A：
+1. 进入 https://github.com/zhizhi200271/-/actions
+2. 找到失败或等待审核的运行记录，点击进入
+3. 点击 **"Approve and run"** 按钮批准运行
 
-### 之后的使用（全自动，无需干预）
+### Q：PR 合并后 Actions 没有自动运行？
 
-- GitHub Desktop **自动更新**后：Windows 计划任务会在下次登录时**自动重新应用**中文补丁
-- 翻译文件更新后：Actions 自动构建新版补丁包，无需手动操作
+A：手动触发：进入 https://github.com/zhizhi200271/-/actions/workflows/build-zh-cn-patch.yml → 点击 **"Run workflow"** → 点击绿色 **"Run workflow"** 按钮。
 
 ---
 
 ## 🔧 翻译覆盖范围
 
-| 区域 | 翻译项数 | 状态 |
-|------|---------|------|
-| 菜单栏（文件/编辑/视图/仓库/分支/帮助） | ~60 项 | ✅ 完整 |
-| 工具栏（仓库/分支/推送拉取按钮） | ~20 项 | ✅ 完整 |
-| 更改面板（提交/暂存/放弃） | ~30 项 | ✅ 完整 |
-| 历史面板（提交历史/操作） | ~20 项 | ✅ 完整 |
-| 分支面板（新建/合并/变基） | ~20 项 | ✅ 完整 |
-| 克隆/新建仓库对话框 | ~25 项 | ✅ 完整 |
-| 登录/账户对话框 | ~20 项 | ✅ 完整 |
-| 设置/偏好对话框 | ~15 项 | ✅ 完整 |
-| 冲突解决对话框 | ~15 项 | ✅ 完整 |
-| 状态栏/通知/错误信息 | ~50 项 | ✅ 完整 |
-| 通用按钮/标签 | ~40 项 | ✅ 完整 |
-
----
-
-## ⚠️ 注意事项
-
-1. **需要 Node.js**：补丁脚本使用 Node.js 处理 `.asar` 文件。如未安装，请先访问 [nodejs.org](https://nodejs.org) 下载安装。
-
-2. **自动备份**：脚本运行前会自动备份原始 `app.asar` 文件，可随时恢复英文版本。
-
-3. **GitHub Desktop 版本**：本补丁专为 v3.5.7 设计。如使用其他版本，可修改脚本中的版本号参数。
-
-4. **安全性**：补丁仅替换 UI 字符串，不修改任何功能代码，安全可靠。
-
-5. **恢复英文版本**：
-   - Windows：运行 `scripts/restore.ps1`
-   - macOS：`cp "/Applications/GitHub Desktop.app/Contents/Resources/app.asar.zh-cn-backup" "/Applications/GitHub Desktop.app/Contents/Resources/app.asar"`
+| 界面区域 | 状态 |
+|---------|------|
+| 菜单栏（文件/编辑/视图/仓库/分支/帮助） | ✅ 完整 |
+| 工具栏（当前仓库/当前分支/推送/拉取/获取） | ✅ 完整 |
+| 更改面板（提交/暂存/放弃） | ✅ 完整 |
+| 历史面板（提交历史/还原/遴选） | ✅ 完整 |
+| 分支面板（新建/合并/变基/重命名/删除） | ✅ 完整 |
+| 所有对话框（克隆/新建/设置/登录等） | ✅ 完整 |
+| 状态信息、通知、错误提示 | ✅ 完整 |
 
 ---
 
@@ -158,19 +115,20 @@ irm https://raw.githubusercontent.com/zhizhi200271/-/main/github-desktop-zh-CN/s
 
 ```
 github-desktop-zh-CN/
-├── README.md                    # 本文档
+├── README.md                    ← 本文档（使用说明）
 ├── translations/
-│   └── zh-CN.json              # 完整简体中文翻译（500+ 条）
+│   └── zh-CN.json              ← 完整简体中文翻译（500+ 条）
 └── scripts/
-    ├── apply-patch.ps1         # Windows 自动补丁脚本
-    ├── apply-patch.sh          # macOS 自动补丁脚本
-    └── restore.ps1             # 恢复英文版本脚本
+    ├── apply-patch.ps1         ← Windows 补丁脚本
+    ├── apply-patch.sh          ← macOS 补丁脚本
+    └── restore.ps1             ← 恢复英文版本脚本
 
 .github/workflows/
-└── build-zh-cn-patch.yml      # Actions 自动构建工作流
+└── build-zh-cn-patch.yml      ← 自动构建工作流（合并到 main 自动触发）
 ```
 
 ---
 
 *🤖 铸码 · CMS-CORE-001 · 自动化语言包系统*
 *👤 主控: 之之 (zhizhi200271)*
+
