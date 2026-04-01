@@ -118,6 +118,40 @@
       "timestamp": "2026-04-01T03:44:05.753469",
       "type": "workflow_created",
       "description": "创建工作流: build-zh-cn-patch.yml 自动构建汉化包"
+    },
+    {
+      "id": "UPD-0014",
+      "timestamp": "2026-04-01T13:28:36.424091",
+      "type": "system_boot",
+      "description": "系统启动 (第 4 次)"
+    },
+    {
+      "id": "UPD-0015",
+      "timestamp": "2026-04-01T13:28:36.424091",
+      "type": "task_completed",
+      "description": "任务完成: 增强仪表盘展示功能，添加最新任务详情区块",
+      "details": {
+        "task_id": "TASK-0003",
+        "files": [
+          ".ai/generate_dashboard.py",
+          ".ai/memory/task_history.json",
+          ".ai/memory/update_log.json",
+          ".ai/memory/system_state.json",
+          "README.md"
+        ],
+        "lessons": [
+          "仪表盘需要展示足够的任务详情，方便主控查阅",
+          "任务描述截断长度应适当增大以保留完整信息",
+          "最新任务应单独展示为详情卡片，包含变更文件和经验教训",
+          "仪表盘更新与任务执行应同步进行，保持数据一致性"
+        ]
+      }
+    },
+    {
+      "id": "UPD-0016",
+      "timestamp": "2026-04-01T13:28:36.424091",
+      "type": "dashboard_enhanced",
+      "description": "增强仪表盘: 添加最新任务详情区块、扩展任务表格字段、增大描述显示长度"
     }
   ]
 }
