@@ -16,6 +16,24 @@ def load_json(path, default=None):
     return default or {}
 
 
+def _status_label(status):
+    """将状态值转换为显示标签"""
+    mapping = {
+        "completed": "✅ 已执行",
+        "in_progress": "🔄 执行中",
+    }
+    return mapping.get(status, "⏳ 待执行")
+
+
+def _status_icon(status):
+    """将状态值转换为图标"""
+    mapping = {
+        "completed": "✅",
+        "in_progress": "🔄",
+    }
+    return mapping.get(status, "⏳")
+
+
 def generate_dashboard(repo_root="."):
     """生成仓库首页仪表盘的 Markdown 内容"""
     mem = os.path.join(repo_root, ".ai", "memory")
@@ -133,7 +151,7 @@ def generate_dashboard(repo_root="."):
     all_commands = commands.get("commands", [])
     if all_commands:
         latest_cmd = all_commands[-1]
-        cmd_status = "✅ 已执行" if latest_cmd.get("status") == "completed" else "🔄 执行中" if latest_cmd.get("status") == "in_progress" else "⏳ 待执行"
+        cmd_status = _status_label(latest_cmd.get("status", ""))
         lines.append("### 📢 主控指令板")
         lines.append("")
         lines.append(f"> 💬 **最新指令** — {latest_cmd.get('instruction', '')}")
@@ -163,7 +181,7 @@ def generate_dashboard(repo_root="."):
             for cmd in reversed(recent_cmds):
                 ts = cmd.get("timestamp", "")[:16]
                 summary = cmd.get("summary", "")[:50]
-                s = "✅" if cmd.get("status") == "completed" else "🔄" if cmd.get("status") == "in_progress" else "⏳"
+                s = _status_icon(cmd.get("status", ""))
                 lines.append(f"| {cmd.get('id', '')} | {ts} | {summary} | {s} |")
             lines.append("")
 
