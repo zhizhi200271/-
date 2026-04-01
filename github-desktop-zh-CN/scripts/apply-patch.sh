@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================
-# GitHub Desktop 3.5.7 简体中文补丁脚本 (macOS/Linux)
+# GitHub Desktop 3.5.7 简体中文补丁脚本 (macOS)
 # 铸码 CMS-CORE-001 | 主控: 之之 (zhizhi200271)
 # ============================================================
 # 使用方法: chmod +x apply-patch.sh && ./apply-patch.sh
@@ -27,7 +27,7 @@ title "  GitHub Desktop ${TARGET_VERSION} 简体中文汉化补丁"
 title "  铸码 CMS-CORE-001 | 主控: 之之"
 title "════════════════════════════════════════════════════"
 
-# ── 检测 macOS 安装路径 ──────────────────────────────────────
+# ── 检测操作系统和安装路径 ────────────────────────────────────
 title "步骤 1/5: 检测 GitHub Desktop 安装路径"
 
 ASAR_PATH=""
@@ -47,8 +47,30 @@ if [ "$(uname)" = "Darwin" ]; then
         fail "默认安装位置: /Applications/GitHub Desktop.app"
         exit 1
     fi
+elif [ "$(uname)" = "Linux" ]; then
+    # Linux（非官方 shiftkey/desktop 分支）
+    LINUX_PATHS=(
+        "/usr/lib/github-desktop/resources/app.asar"
+        "/usr/share/github-desktop/resources/app.asar"
+        "/opt/GitHub Desktop/resources/app.asar"
+        "/snap/github-desktop/current/resources/app.asar"
+    )
+    for lpath in "${LINUX_PATHS[@]}"; do
+        if [ -f "$lpath" ]; then
+            ASAR_PATH="$lpath"
+            APP_DIR="$(dirname "$lpath")"
+            ok "找到 GitHub Desktop: $APP_DIR"
+            break
+        fi
+    done
+    if [ -z "$ASAR_PATH" ] && [ -z "$APP_DIR" ]; then
+        fail "未找到 GitHub Desktop！"
+        warn "Linux 用户请确认已安装 GitHub Desktop (shiftkey/desktop 分支)"
+        warn "已搜索路径: ${LINUX_PATHS[*]}"
+        exit 1
+    fi
 else
-    fail "此脚本仅支持 macOS。Windows 用户请使用 apply-patch.ps1"
+    fail "此脚本仅支持 macOS 和 Linux。Windows 用户请使用 apply-patch.ps1"
     exit 1
 fi
 
@@ -77,10 +99,23 @@ ok "Node.js 已就绪: $NODE_VER"
 
 # ── 获取翻译文件 ──────────────────────────────────────────────
 title "步骤 4/5: 加载翻译文件"
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TRANS_PATH="$SCRIPT_DIR/../translations/zh-CN.json"
 
-if [ ! -f "$TRANS_PATH" ]; then
+# 获取脚本所在目录（兼容 curl | bash 管道调用）
+SCRIPT_DIR=""
+if [ -n "${BASH_SOURCE[0]}" ] && [ "${BASH_SOURCE[0]}" != "bash" ] && [ -f "${BASH_SOURCE[0]}" ]; then
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+fi
+
+TRANS_PATH=""
+if [ -n "$SCRIPT_DIR" ]; then
+    if [ -f "$SCRIPT_DIR/../translations/zh-CN.json" ]; then
+        TRANS_PATH="$SCRIPT_DIR/../translations/zh-CN.json"
+    elif [ -f "$SCRIPT_DIR/zh-CN.json" ]; then
+        TRANS_PATH="$SCRIPT_DIR/zh-CN.json"
+    fi
+fi
+
+if [ -z "$TRANS_PATH" ] || [ ! -f "$TRANS_PATH" ]; then
     info "正在从 GitHub 下载翻译文件..."
     TEMP_TRANS="/tmp/github-desktop-zh-CN.json"
     if curl -fsSL "https://raw.githubusercontent.com/zhizhi200271/-/main/github-desktop-zh-CN/translations/zh-CN.json" -o "$TEMP_TRANS"; then
