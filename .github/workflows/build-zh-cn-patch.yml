@@ -47,6 +47,8 @@ jobs:
   validate:
     name: ✅ 验证翻译文件
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       translation_count: ${{ steps.count.outputs.count }}
       version: ${{ steps.version.outputs.version }}
@@ -109,6 +111,8 @@ jobs:
   build:
     name: 📦 构建补丁包
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     needs: validate
     steps:
       - name: 检出代码
