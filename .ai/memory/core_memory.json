@@ -24,6 +24,10 @@
     "memory_system_origin": {
       "content": "自动化记忆系统源自 OKComputer_自动化记忆系统.zip，参考了 AGE OS 架构",
       "created_at": "2026-03-31T11:50:00"
+    },
+    "github_desktop_zh_cn": {
+      "content": "GitHub Desktop 3.5.7 中文语言包已开发完成，存放在 github-desktop-zh-CN/ 目录，Actions 自动构建",
+      "created_at": "2026-04-01T03:44:05.753469"
     }
   },
   "repo_context": {

@@ -11,6 +11,16 @@
       "example": "python3 .ai/generate_dashboard.py .",
       "frequency": 1,
       "last_seen": "2026-03-31T11:56:43.530247"
+    },
+    "electron_asar_patch": {
+      "name": "Electron app 汉化模式",
+      "description": "通过解包 app.asar → 字符串替换 → 重打包实现 Electron 应用汉化",
+      "discovered_at": "2026-04-01T03:43:21.760247",
+      "tags": [
+        "electron",
+        "asar",
+        "localization"
+      ]
     }
   },
   "solutions": {
@@ -24,6 +34,12 @@
       ],
       "created_at": "2026-03-31T11:56:43.530837",
       "used_count": 0
+    },
+    "github_desktop_zh_cn": {
+      "problem": "GitHub Desktop 英文界面无法切换语言",
+      "solution": "通过补丁脚本替换 app.asar 中的 UI 字符串实现汉化，配合 GitHub Actions 自动构建和发布",
+      "effectiveness": "high",
+      "solved_at": "2026-04-01T03:43:21.760247"
     }
   },
   "best_practices": [
@@ -66,7 +82,10 @@
       "practice": "系统架构应该模块化，便于后续扩展",
       "category": "development",
       "added_at": "2026-03-31T11:56:43.529120"
-    }
+    },
+    "Electron 应用汉化：使用 @electron/asar 工具解包/重打包，字符串替换用正则匹配引号包裹的字面量",
+    "GitHub Actions Release 自动化：用 softprops/action-gh-release + upload-artifact 实现自动发布",
+    "补丁脚本要自动备份原文件并支持一键恢复，降低用户风险"
   ],
   "error_patterns": {},
   "tech_stack": {

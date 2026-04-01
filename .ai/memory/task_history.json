@@ -30,6 +30,36 @@
         "memory-system",
         "initial-build"
       ]
+    },
+    {
+      "id": "TASK-0002",
+      "timestamp": "2026-04-01T03:42:38.497320",
+      "description": "开发 GitHub Desktop 3.5.7 全自动简体中文语言包，含 GitHub Actions 自动构建工作流",
+      "type": "development",
+      "files_changed": [
+        "github-desktop-zh-CN/README.md",
+        "github-desktop-zh-CN/translations/zh-CN.json",
+        "github-desktop-zh-CN/scripts/apply-patch.ps1",
+        "github-desktop-zh-CN/scripts/apply-patch.sh",
+        "github-desktop-zh-CN/scripts/restore.ps1",
+        ".github/workflows/build-zh-cn-patch.yml"
+      ],
+      "outcome": "completed",
+      "lessons_learned": [
+        "GitHub Desktop 是 Electron 应用，UI 字符串以字面量形式存在于打包的 JS bundle 中",
+        "通过 @electron/asar 工具可以解包/重打包 app.asar 进行字符串替换",
+        "Windows 计划任务可实现 GitHub Desktop 更新后自动重打补丁",
+        "GitHub Actions workflow_dispatch + push 触发可实现全自动构建和发布",
+        "softprops/action-gh-release 可自动创建/更新 Release 并上传附件",
+        "翻译文件用扁平化 JSON + 分类存储，便于维护和扩展"
+      ],
+      "tags": [
+        "localization",
+        "github-desktop",
+        "electron",
+        "github-actions",
+        "automation"
+      ]
     }
   ]
 }
