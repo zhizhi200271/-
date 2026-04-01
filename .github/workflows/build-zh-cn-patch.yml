@@ -1,0 +1,340 @@
+# ============================================================
+# GitHub Desktop 简体中文语言包 - 自动构建工作流
+# 铸码 CMS-CORE-001 | 主控: 之之 (zhizhi200271)
+# ============================================================
+# 触发条件:
+#   1. 推送/合并到 main 分支且修改了翻译文件
+#   2. 手动触发 (workflow_dispatch)
+# 产出:
+#   - 补丁包 ZIP (含脚本 + 翻译文件)
+#   - 自动创建/更新 GitHub Release
+# ============================================================
+
+name: 🇨🇳 构建 GitHub Desktop 中文语言包
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'github-desktop-zh-CN/**'
+      - '.github/workflows/build-zh-cn-patch.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'github-desktop-zh-CN/**'
+  workflow_dispatch:
+    inputs:
+      create_release:
+        description: '是否创建/更新 GitHub Release'
+        type: boolean
+        default: true
+        required: false
+      target_version:
+        description: 'GitHub Desktop 目标版本'
+        type: string
+        default: '3.5.7'
+        required: false
+
+# 防止并发运行
+concurrency:
+  group: build-zh-cn-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── 验证翻译文件 ────────────────────────────────────────────
+  validate:
+    name: ✅ 验证翻译文件
+    runs-on: ubuntu-latest
+    outputs:
+      translation_count: ${{ steps.count.outputs.count }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: '**/package*.json'
+
+      - name: 验证 zh-CN.json 格式
+        id: count
+        run: |
+          python3 - << 'EOF'
+          import json, os
+
+          def count_strings(obj):
+              total = 0
+              if isinstance(obj, dict):
+                  for k, v in obj.items():
+                      if k == '_meta':
+                          continue
+                      if isinstance(v, str):
+                          total += 1
+                      elif isinstance(v, dict):
+                          total += count_strings(v)
+              return total
+
+          with open('github-desktop-zh-CN/translations/zh-CN.json', 'r', encoding='utf-8') as f:
+              data = json.load(f)
+
+          count = count_strings(data)
+          print(f'✅ 翻译文件验证通过')
+          print(f'📊 翻译条目总数: {count}')
+          print(f'📦 顶级分类: {len([k for k in data if k != "_meta"])}')
+
+          meta = data.get('_meta', {})
+          print(f'📋 语言包版本: {meta.get("version", "未知")}')
+          print(f'🌐 目标语言: {meta.get("locale", "未知")}')
+
+          output_file = os.environ.get('GITHUB_OUTPUT', '/dev/null')
+          with open(output_file, 'a') as f:
+              f.write(f'count={count}\n')
+          EOF
+
+      - name: 获取目标版本
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "version=${{ inputs.target_version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=$(python3 -c "import json; print(json.load(open('github-desktop-zh-CN/translations/zh-CN.json'))['_meta']['version'])")" >> $GITHUB_OUTPUT
+          fi
+
+  # ── 构建补丁包 ──────────────────────────────────────────────
+  build:
+    name: 📦 构建补丁包
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置构建信息
+        run: |
+          echo "BUILD_DATE=$(date -u '+%Y-%m-%d %H:%M UTC')" >> $GITHUB_ENV
+          echo "GH_VERSION=${{ needs.validate.outputs.version }}" >> $GITHUB_ENV
+          echo "TRANS_COUNT=${{ needs.validate.outputs.translation_count }}" >> $GITHUB_ENV
+          echo "PACKAGE_NAME=github-desktop-zh-CN-v${{ needs.validate.outputs.version }}" >> $GITHUB_ENV
+
+      - name: 生成一键安装脚本（Windows）
+        run: |
+          cat > /tmp/install-zh-cn.ps1 << 'PSEOF'
+          # ============================================================
+          # GitHub Desktop 中文语言包 - 一键安装脚本
+          # 从 GitHub Release 下载并自动应用
+          # 铸码 CMS-CORE-001 | 主控: 之之
+          # ============================================================
+          param([string]$Version = "3.5.7")
+
+          $ErrorActionPreference = "Stop"
+          $repoBase = "https://raw.githubusercontent.com/zhizhi200271/-/main/github-desktop-zh-CN"
+          $tempDir = "$env:TEMP\github-desktop-zh-cn-install"
+
+          Write-Host "📥 正在下载 GitHub Desktop 中文语言包..." -ForegroundColor Cyan
+
+          if (-not (Test-Path $tempDir)) { New-Item -ItemType Directory -Path $tempDir | Out-Null }
+
+          # 下载补丁脚本和翻译文件
+          $files = @(
+              @{ url = "$repoBase/scripts/apply-patch.ps1"; dest = "$tempDir\apply-patch.ps1" },
+              @{ url = "$repoBase/translations/zh-CN.json"; dest = "$tempDir\zh-CN.json" }
+          )
+
+          foreach ($file in $files) {
+              try {
+                  Invoke-WebRequest -Uri $file.url -OutFile $file.dest -UseBasicParsing
+                  Write-Host "  ✅ $($file.dest | Split-Path -Leaf)" -ForegroundColor Green
+              } catch {
+                  Write-Host "  ❌ 下载失败: $($file.url)" -ForegroundColor Red
+                  exit 1
+              }
+          }
+
+          Write-Host "`n🚀 正在应用中文补丁..." -ForegroundColor Cyan
+          Set-Location $tempDir
+          & powershell -ExecutionPolicy Bypass -File "$tempDir\apply-patch.ps1" -TargetVersion $Version
+          PSEOF
+
+      - name: 生成一键安装脚本（macOS）
+        run: |
+          cat > /tmp/install-zh-cn.sh << 'SHEOF'
+          #!/bin/bash
+          # GitHub Desktop 中文语言包 - 一键安装脚本 (macOS)
+          # 铸码 CMS-CORE-001 | 主控: 之之
+          set -e
+
+          REPO_BASE="https://raw.githubusercontent.com/zhizhi200271/-/main/github-desktop-zh-CN"
+          TEMP_DIR="/tmp/github-desktop-zh-cn-install"
+
+          echo "📥 正在下载 GitHub Desktop 中文语言包..."
+          mkdir -p "$TEMP_DIR"
+
+          curl -fsSL "$REPO_BASE/scripts/apply-patch.sh" -o "$TEMP_DIR/apply-patch.sh"
+          curl -fsSL "$REPO_BASE/translations/zh-CN.json" -o "$TEMP_DIR/zh-CN.json"
+          chmod +x "$TEMP_DIR/apply-patch.sh"
+
+          echo "🚀 正在应用中文补丁..."
+          cd "$TEMP_DIR" && bash apply-patch.sh
+          SHEOF
+          chmod +x /tmp/install-zh-cn.sh
+
+      - name: 打包补丁包（ZIP）
+        run: |
+          mkdir -p /tmp/package/$PACKAGE_NAME
+          cp -r github-desktop-zh-CN/. /tmp/package/$PACKAGE_NAME/
+          cp /tmp/install-zh-cn.ps1 /tmp/package/$PACKAGE_NAME/scripts/
+          cp /tmp/install-zh-cn.sh /tmp/package/$PACKAGE_NAME/scripts/
+
+          # 生成包内 README
+          cat > /tmp/package/$PACKAGE_NAME/INSTALL.md << MDEOF
+          # GitHub Desktop 中文语言包 v${GH_VERSION}
+          **构建时间**: ${BUILD_DATE}
+          **翻译条目**: ${TRANS_COUNT} 条
+          **铸码 CMS-CORE-001** | 主控: 之之
+
+          ## Windows 安装方法（推荐）
+
+          **方法一：一键在线安装（最简单）**
+          以管理员身份打开 PowerShell，粘贴运行：
+          \`\`\`powershell
+          irm https://raw.githubusercontent.com/zhizhi200271/-/main/github-desktop-zh-CN/scripts/apply-patch.ps1 | iex
+          \`\`\`
+
+          **方法二：使用本包中的脚本**
+          1. 右键点击 \`scripts/apply-patch.ps1\`
+          2. 选择"使用 PowerShell 运行"
+          3. 重启 GitHub Desktop
+
+          ## macOS 安装方法
+
+          **方法一：一键在线安装**
+          \`\`\`bash
+          curl -fsSL https://raw.githubusercontent.com/zhizhi200271/-/main/github-desktop-zh-CN/scripts/apply-patch.sh | bash
+          \`\`\`
+
+          **方法二：使用本包中的脚本**
+          \`\`\`bash
+          chmod +x scripts/apply-patch.sh && bash scripts/apply-patch.sh
+          \`\`\`
+
+          ## 恢复英文版本
+          运行 \`scripts/restore.ps1\`（Windows）或手动恢复备份文件。
+          MDEOF
+
+          cd /tmp/package
+          zip -r /tmp/${PACKAGE_NAME}.zip $PACKAGE_NAME/
+          echo "✅ 补丁包已创建: ${PACKAGE_NAME}.zip"
+          ls -lh /tmp/${PACKAGE_NAME}.zip
+
+      - name: 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PACKAGE_NAME }}
+          path: /tmp/${{ env.PACKAGE_NAME }}.zip
+          retention-days: 90
+
+      - name: 显示构建摘要
+        run: |
+          echo "## 🇨🇳 GitHub Desktop 中文语言包构建完成" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| 项目 | 值 |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-----|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🎯 目标版本 | GitHub Desktop ${{ needs.validate.outputs.version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📊 翻译条目 | ${{ needs.validate.outputs.translation_count }} 条 |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📅 构建时间 | $BUILD_DATE |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📦 包名 | $PACKAGE_NAME.zip |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📥 安装方法" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Windows 一键安装（以管理员身份运行 PowerShell）:**" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`powershell" >> $GITHUB_STEP_SUMMARY
+          echo "irm https://raw.githubusercontent.com/zhizhi200271/-/main/github-desktop-zh-CN/scripts/apply-patch.ps1 | iex" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**macOS 一键安装:**" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "curl -fsSL https://raw.githubusercontent.com/zhizhi200271/-/main/github-desktop-zh-CN/scripts/apply-patch.sh | bash" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+  # ── 创建 Release ────────────────────────────────────────────
+  release:
+    name: 🚀 发布 Release
+    runs-on: ubuntu-latest
+    needs: [validate, build]
+    # 仅在推送到 main 或手动触发时创建 Release（非 PR）
+    if: |
+      github.event_name == 'push' && github.ref == 'refs/heads/main' ||
+      (github.event_name == 'workflow_dispatch' && inputs.create_release == true)
+    permissions:
+      contents: write
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 下载构建产物
+        uses: actions/download-artifact@v4
+        with:
+          name: github-desktop-zh-CN-v${{ needs.validate.outputs.version }}
+          path: /tmp/release/
+
+      - name: 创建/更新 Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: zh-CN-v${{ needs.validate.outputs.version }}
+          name: "🇨🇳 GitHub Desktop ${{ needs.validate.outputs.version }} 简体中文语言包"
+          body: |
+            ## 🇨🇳 GitHub Desktop ${{ needs.validate.outputs.version }} 简体中文语言包
+
+            > 由 **铸码 CMS-CORE-001** 自动构建 | 主控: 之之 (zhizhi200271)
+
+            ### 📊 版本信息
+            - 🎯 **目标版本**: GitHub Desktop ${{ needs.validate.outputs.version }}
+            - 📊 **翻译条目**: ${{ needs.validate.outputs.translation_count }} 条
+            - 🌐 **语言**: 简体中文 (zh-CN)
+            - 📅 **发布时间**: ${{ github.event.head_commit.timestamp || github.event.inputs.target_version }}
+
+            ---
+
+            ### 🚀 安装方法
+
+            #### Windows（推荐：一键在线安装）
+            以**管理员身份**打开 PowerShell，粘贴运行：
+            ```powershell
+            irm https://raw.githubusercontent.com/zhizhi200271/-/main/github-desktop-zh-CN/scripts/apply-patch.ps1 | iex
+            ```
+
+            #### Windows（离线安装）
+            1. 下载下方 `github-desktop-zh-CN-v${{ needs.validate.outputs.version }}.zip`
+            2. 解压后右键点击 `scripts/apply-patch.ps1`
+            3. 选择"使用 PowerShell 运行"
+            4. 重启 GitHub Desktop ✅
+
+            #### macOS（一键在线安装）
+            ```bash
+            curl -fsSL https://raw.githubusercontent.com/zhizhi200271/-/main/github-desktop-zh-CN/scripts/apply-patch.sh | bash
+            ```
+
+            ---
+
+            ### ⚠️ 注意事项
+            - 补丁会**自动备份**原始文件，可随时恢复英文版本
+            - GitHub Desktop **自动更新后**，Windows 版本会通过计划任务**自动重新应用**中文补丁
+            - 如需恢复英文版本，运行 `scripts/restore.ps1`
+
+            ### 🔧 覆盖范围
+            - ✅ 菜单栏（文件/编辑/视图/仓库/分支/帮助）
+            - ✅ 工具栏（当前仓库/当前分支/推送/拉取/获取）
+            - ✅ 更改面板（提交/暂存/放弃）
+            - ✅ 历史面板（提交历史/还原）
+            - ✅ 分支面板（新建/合并/变基）
+            - ✅ 所有对话框（克隆/新建/设置等）
+            - ✅ 状态信息和错误提示
+          files: /tmp/release/*.zip
+          draft: false
+          prerelease: false
+          make_latest: true
