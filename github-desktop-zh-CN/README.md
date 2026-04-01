@@ -88,13 +88,14 @@ chmod +x apply-patch.sh && ./apply-patch.sh
 irm https://raw.githubusercontent.com/zhizhi200271/-/main/github-desktop-zh-CN/scripts/restore.ps1 | iex
 ```
 
-**macOS/Linux**：
+**macOS**（默认安装路径）：
 
 ```bash
-# 将备份文件复制回去（脚本安装时会自动告诉你备份路径）
 cp "/Applications/GitHub Desktop.app/Contents/Resources/app.asar.zh-cn-backup" \
    "/Applications/GitHub Desktop.app/Contents/Resources/app.asar"
 ```
+
+> 💡 备份文件名固定为 `app.asar.zh-cn-backup`，与 `app.asar` 在同一目录下。Linux 用户请替换为实际的 GitHub Desktop 安装路径。
 
 ---
 
