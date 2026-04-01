@@ -152,6 +152,36 @@
       "timestamp": "2026-04-01T13:28:36.424091",
       "type": "dashboard_enhanced",
       "description": "增强仪表盘: 添加最新任务详情区块、扩展任务表格字段、增大描述显示长度"
+    },
+    {
+      "id": "UPD-0017",
+      "timestamp": "2026-04-01T13:41:28",
+      "type": "system_boot",
+      "description": "系统启动 (第 5 次)"
+    },
+    {
+      "id": "UPD-0018",
+      "timestamp": "2026-04-01T13:41:28",
+      "type": "feature_added",
+      "description": "新增「主控指令板」功能: 添加 master_commands.json 追踪主控指令，仪表盘实时展示指令及执行状态",
+      "details": {
+        "task_id": "TASK-0004",
+        "files": [
+          ".ai/generate_dashboard.py",
+          ".ai/memory/master_commands.json",
+          ".ai/memory/task_history.json",
+          ".ai/memory/update_log.json",
+          ".ai/memory/system_state.json",
+          ".ai/memory/core_memory.json",
+          "README.md"
+        ]
+      }
+    },
+    {
+      "id": "UPD-0019",
+      "timestamp": "2026-04-01T13:41:28",
+      "type": "knowledge_added",
+      "description": "记录知识: GitHub Copilot Pro 订阅信息（无固定月度对话硬限制，高级模型有配额）"
     }
   ]
 }
