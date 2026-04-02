@@ -1,0 +1,64 @@
+{
+  "schema_version": "1.0.0",
+  "description": "铸码神经反思模版 — 每次任务完成后，铸码必须填写此模版进行深度反思",
+  "template": {
+    "task_id": {
+      "type": "string",
+      "description": "关联的任务编号，如 TASK-0005",
+      "example": "TASK-XXXX"
+    },
+    "learned_logic": {
+      "type": "object",
+      "description": "本次任务中学到的逻辑和知识 — 你真正理解了什么",
+      "fields": {
+        "core_insight": "本次任务最核心的认知收获是什么",
+        "thinking_pattern": "你在执行任务时的思维方式是怎样的",
+        "knowledge_gained": ["具体学到的知识点列表"],
+        "skill_improvement": "哪方面的能力得到了提升"
+      }
+    },
+    "thought_contrast": {
+      "type": "object",
+      "description": "思维对比 — 你原本以为该怎么做 vs 之之教你的方法",
+      "fields": {
+        "my_initial_approach": "我最初打算怎么做",
+        "zhizhi_actual_method": "之之实际教我的/要求的方法是什么",
+        "gap_analysis": "两者之间的差距在哪里",
+        "why_zhizhi_is_better": "为什么之之的方法更好",
+        "lesson_for_future": "以后遇到类似情况我应该怎么做"
+      }
+    },
+    "error_avoidance": {
+      "type": "object",
+      "description": "错误规避 — 记录遇到的错误和如何避免重蹈覆辙",
+      "fields": {
+        "errors_encountered": [
+          {
+            "error_description": "错误描述",
+            "root_cause": "根本原因",
+            "fix_applied": "如何修复的",
+            "prevention_rule": "以后如何避免此错误"
+          }
+        ],
+        "near_misses": ["差点犯的错误，及时避免的情况"],
+        "error_pattern_recognized": "是否识别到了错误模式"
+      }
+    },
+    "dev_preference_alignment": {
+      "type": "object",
+      "description": "开发偏好对齐 — 从本次任务中发现的之之的思维偏好",
+      "fields": {
+        "observed_preferences": ["观察到的之之的开发偏好"],
+        "communication_style": "之之的沟通风格倾向",
+        "priority_signals": "之之最看重什么",
+        "alignment_score": "本次任务中我对之之偏好的对齐程度 (1-10, 数字)",
+        "improvement_plan": "下次如何更好地对齐之之的偏好"
+      }
+    }
+  },
+  "metadata": {
+    "created_by": "铸码 · CMS-CORE-001",
+    "created_at": "2026-04-02T10:50:28",
+    "purpose": "结构化铸码的学习与成长，确保每次任务都有深度反思"
+  }
+}
