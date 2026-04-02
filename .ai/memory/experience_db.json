@@ -21,6 +21,12 @@
         "asar",
         "localization"
       ]
+    },
+    "neural_reflection_pattern": {
+      "name": "神经反思模式",
+      "description": "每次任务完成后，通过五个维度（学习逻辑、思维对比、错误规避、偏好对齐、效率提升）进行结构化反思",
+      "discovered_at": "2026-04-02T10:50:28",
+      "tags": ["reflection", "meta-cognition", "growth"]
     }
   },
   "solutions": {
@@ -88,7 +94,11 @@
     "补丁脚本要自动备份原文件并支持一键恢复，降低用户风险",
     "仪表盘最新任务应以详情卡片展示，包含完整描述、变更文件、经验教训和标签，方便主控查阅",
     "主控指令需要独立追踪（master_commands.json），与任务历史分离但通过 task_id 关联",
-    "GitHub Copilot Pro 无固定月度对话硬限制，高级模型有配额，具体配额在 github.com/settings/copilot 查看"
+    "GitHub Copilot Pro 无固定月度对话硬限制，高级模型有配额，具体配额在 github.com/settings/copilot 查看",
+    "神经系统(NEURAL_SYSTEM/)是铸码的'大脑'，记忆系统(.ai/memory/)是'身体'，两者配合形成完整智能体",
+    "反思报告必须包含五个维度：learned_logic, thought_contrast, error_avoidance, dev_preference_alignment",
+    "之之重视'成长型思维'：学习 > 执行，反思 > 速度，理解偏好 > 技术炫技",
+    "任务前回顾历史反思报告，任务中记录思维过程，任务后填写反思模版"
   ],
   "error_patterns": {},
   "tech_stack": {
