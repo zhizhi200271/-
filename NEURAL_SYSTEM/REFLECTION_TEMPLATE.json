@@ -51,7 +51,7 @@
         "observed_preferences": ["观察到的之之的开发偏好"],
         "communication_style": "之之的沟通风格倾向",
         "priority_signals": "之之最看重什么",
-        "alignment_score": "本次任务中我对之之偏好的对齐程度 (1-10)",
+        "alignment_score": "本次任务中我对之之偏好的对齐程度 (1-10, 数字)",
         "improvement_plan": "下次如何更好地对齐之之的偏好"
       }
     }
