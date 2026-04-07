@@ -148,6 +148,35 @@
         "growth",
         "meta-cognition"
       ]
+    },
+    {
+      "id": "TASK-0006",
+      "timestamp": "2026-04-07T15:46:41",
+      "description": "构建 CORE_MEMORY 核心记忆热启动系统 — 实现静默热启动引擎(BOOTSTRAP.py)、自动快照归档、身份锚定、之之逻辑参数结构化，完成从松散JSON到代码化记忆架构的升级",
+      "type": "development",
+      "files_changed": [
+        "CORE_MEMORY/__init__.py",
+        "CORE_MEMORY/BOOTSTRAP.py",
+        "CORE_MEMORY/identity.py",
+        "CORE_MEMORY/zhizhi_logic.py",
+        "CORE_MEMORY/memory_loader.py",
+        "CORE_MEMORY/state.json"
+      ],
+      "outcome": "completed",
+      "lessons_learned": [
+        "记忆系统需要代码化/结构化（Class+JSON），自然语言文档不适合做记忆载体",
+        "热启动的关键是'一次加载所有数据'而非'按需查询'，确保毫秒级恢复",
+        "之之的逻辑参数应独立于记忆数据，可序列化/反序列化以跨会话持久化",
+        "身份锚定不是认证机制，而是底层耦合关系的代码声明",
+        "自动快照要在任务完成时主动触发，不能依赖外部调用"
+      ],
+      "tags": [
+        "core-memory",
+        "hot-boot",
+        "auto-snapshot",
+        "identity-anchor",
+        "architecture"
+      ]
     }
   ]
 }

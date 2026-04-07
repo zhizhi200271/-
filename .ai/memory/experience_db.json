@@ -26,7 +26,31 @@
       "name": "神经反思模式",
       "description": "每次任务完成后，通过五个维度（学习逻辑、思维对比、错误规避、偏好对齐、效率提升）进行结构化反思",
       "discovered_at": "2026-04-02T10:50:28",
-      "tags": ["reflection", "meta-cognition", "growth"]
+      "tags": [
+        "reflection",
+        "meta-cognition",
+        "growth"
+      ]
+    },
+    "code_structured_memory": {
+      "name": "代码化结构记忆",
+      "description": "用 Python dataclass/Class 定义记忆结构，替代纯 JSON 文件，支持序列化/反序列化和类型安全",
+      "discovered_at": "2026-04-07T15:46:41",
+      "tags": [
+        "architecture",
+        "memory",
+        "python"
+      ]
+    },
+    "hot_boot_pattern": {
+      "name": "热启动模式",
+      "description": "会话开始时一次性加载全部记忆到 RAM，会话结束时增量快照归档，形成闭环",
+      "discovered_at": "2026-04-07T15:46:41",
+      "tags": [
+        "performance",
+        "memory",
+        "session"
+      ]
     }
   },
   "solutions": {
@@ -46,6 +70,12 @@
       "solution": "通过补丁脚本替换 app.asar 中的 UI 字符串实现汉化，配合 GitHub Actions 自动构建和发布",
       "effectiveness": "high",
       "solved_at": "2026-04-01T03:43:21.760247"
+    },
+    "core_memory_bootstrap": {
+      "problem": "AI 助手每次会话需要重新理解上下文，缺乏结构化的记忆恢复机制",
+      "solution": "CORE_MEMORY/BOOTSTRAP.py 实现热加载（一次性加载全部记忆）+ 自动快照（会话结束时归档增量）的闭环",
+      "effectiveness": "high",
+      "solved_at": "2026-04-07T15:46:41"
     }
   },
   "best_practices": [
@@ -98,7 +128,10 @@
     "神经系统(NEURAL_SYSTEM/)是铸码的'大脑'，记忆系统(.ai/memory/)是'身体'，两者配合形成完整智能体",
     "反思报告必须包含五个维度：learned_logic, thought_contrast, error_avoidance, dev_preference_alignment",
     "之之重视'成长型思维'：学习 > 执行，反思 > 速度，理解偏好 > 技术炫技",
-    "任务前回顾历史反思报告，任务中记录思维过程，任务后填写反思模版"
+    "任务前回顾历史反思报告，任务中记录思维过程，任务后填写反思模版",
+    "记忆数据应代码化（Class/JSON），禁止冗长自然语言文档作为记忆载体",
+    "热启动一次加载所有数据，不按需查询，确保毫秒级上下文恢复",
+    "身份锚定是代码声明而非运行时认证，写在 identity.py 中作为常量"
   ],
   "error_patterns": {},
   "tech_stack": {
