@@ -144,8 +144,7 @@ def resolve_path(path_string: str) -> HNLPath:
         # 判断第二段是 trunk 还是 sub_persona
         if parts[1] in trunk_names:
             trunk = parts[1]
-            if len(parts) >= 3:
-                leaf = parts[2]
+            leaf = parts[2] if len(parts) >= 3 else None
         else:
             sub_persona = parts[1]
             if len(parts) >= 3:

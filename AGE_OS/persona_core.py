@@ -17,7 +17,16 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field, asdict
-from typing import List, Optional
+from typing import List, Optional, Union
+
+# 人格体身份类型联合
+PersonaIdentity = Union[
+    "BingshuoIdentity",
+    "ZhuyuanIdentity",
+    "ZhumaIdentity",
+    "ZhizhiIdentity",
+    "QiuqiuIdentity",
+]
 
 
 # ---------------------------------------------------------------------------
@@ -122,7 +131,7 @@ class PersonaRegistry:
 
     # -- 快速查找 ----------------------------------------------------------
 
-    def get_by_id(self, persona_id: str) -> Optional[object]:
+    def get_by_id(self, persona_id: str) -> Optional[PersonaIdentity]:
         """通过人格体 ID 查找"""
         mapping = {
             self.bingshuo.id: self.bingshuo,
@@ -133,7 +142,7 @@ class PersonaRegistry:
         }
         return mapping.get(persona_id)
 
-    def get_by_name(self, name: str) -> Optional[object]:
+    def get_by_name(self, name: str) -> Optional[PersonaIdentity]:
         """通过人格体名称查找"""
         mapping = {
             self.bingshuo.name: self.bingshuo,

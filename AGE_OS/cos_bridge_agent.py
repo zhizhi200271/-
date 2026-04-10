@@ -216,7 +216,8 @@ class COSBridgeAgent:
         self._log_message(msg_dict)
 
         # 尝试写入 COS
-        report_path = f"reports/report_{self._utc_now().replace(':', '-')}.json"
+        ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        report_path = f"reports/report_{ts}.json"
         self.write_to_bucket(report_path, json.dumps(msg_dict, ensure_ascii=False))
 
         # 更新状态

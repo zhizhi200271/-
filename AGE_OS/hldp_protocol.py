@@ -14,6 +14,7 @@ HLDP — Human-Language Data Protocol (人类语言数据协议)
 from __future__ import annotations
 
 import json
+import threading
 import uuid
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
@@ -126,17 +127,20 @@ class HLDPMessage:
 # 消息 ID 生成
 # ---------------------------------------------------------------------------
 _sequence_counter: int = 0
+_sequence_lock = threading.Lock()
 
 
 def _generate_msg_id(sender_short: str) -> str:
     """
-    生成 HLDP 消息 ID
+    生成 HLDP 消息 ID (线程安全)
     格式: HLDP-{SENDER_SHORT}-{YYYYMMDD}-{SEQ}
     """
     global _sequence_counter
-    _sequence_counter += 1
+    with _sequence_lock:
+        _sequence_counter += 1
+        seq = _sequence_counter
     date_str = datetime.now(timezone.utc).strftime("%Y%m%d")
-    return f"HLDP-{sender_short}-{date_str}-{_sequence_counter:04d}"
+    return f"HLDP-{sender_short}-{date_str}-{seq:04d}"
 
 
 def _utc_now() -> str:
