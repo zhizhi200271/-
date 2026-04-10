@@ -1,0 +1,11 @@
+{
+  "bridge_id": "ZHIZHI-COS-BRIDGE-001",
+  "status": "initialized",
+  "last_heartbeat": null,
+  "last_sync": null,
+  "last_report_sent": null,
+  "last_receipt_received": null,
+  "error_count": 0,
+  "message_count": 0,
+  "created_at": "2026-04-10T07:19:00Z"
+}
