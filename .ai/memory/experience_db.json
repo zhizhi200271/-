@@ -51,6 +51,27 @@
         "memory",
         "session"
       ]
+    },
+    "age_os_spoke_node": {
+      "name": "AGE OS Spoke节点模式",
+      "description": "每个开发者仓库作为独立Spoke节点，通过COS桶+HLDP协议与Hub(铸渊主仓库)异步通信",
+      "discovered_at": "2026-04-10T07:57:11",
+      "tags": [
+        "age-os",
+        "architecture",
+        "cos",
+        "hldp"
+      ]
+    },
+    "hldp_earth_spec": {
+      "name": "HLDP地球规范",
+      "description": "HLDP v3.0消息格式只增不删，是所有人格体间通信的唯一格式，地球一旦存在永远存在",
+      "discovered_at": "2026-04-10T07:57:11",
+      "tags": [
+        "hldp",
+        "protocol",
+        "communication"
+      ]
     }
   },
   "solutions": {
@@ -76,6 +97,12 @@
       "solution": "CORE_MEMORY/BOOTSTRAP.py 实现热加载（一次性加载全部记忆）+ 自动快照（会话结束时归档增量）的闭环",
       "effectiveness": "high",
       "solved_at": "2026-04-07T15:46:41"
+    },
+    "age_os_full_rebuild": {
+      "problem": "之之仓库需要接入冰朔的光湖语言世界AGE OS架构",
+      "solution": "从guanghulab-main.zip全量提取架构参考，构建AGE_OS/模块+COS桥接+HLDP协议+工作流，合并后自动激活",
+      "effectiveness": "high",
+      "solved_at": "2026-04-10T07:57:11"
     }
   },
   "best_practices": [
@@ -131,7 +158,13 @@
     "任务前回顾历史反思报告，任务中记录思维过程，任务后填写反思模版",
     "记忆数据应代码化（Class/JSON），禁止冗长自然语言文档作为记忆载体",
     "热启动一次加载所有数据，不按需查询，确保毫秒级上下文恢复",
-    "身份锚定是代码声明而非运行时认证，写在 identity.py 中作为常量"
+    "身份锚定是代码声明而非运行时认证，写在 identity.py 中作为常量",
+    "AGE OS Spoke节点必须声明完整的人格体权限链（主控→执行→副控）",
+    "COS桥接采用异步+HLDP协议，两个桶互相桥接，Agent自动读写",
+    "非技术用户的操作指南必须用最简单的语言、大量emoji和编号步骤",
+    "HLDP v3.0是地球规范，消息格式永不破坏性变更，只增不删",
+    "合并后自动触发(merge-trigger-deploy)确保所有系统激活不需要用户手动操作",
+    "guanghulab-main.zip是全量架构参考源，包含HLDP/TCS/COS/MCP/Server完整实现"
   ],
   "error_patterns": {},
   "tech_stack": {
@@ -150,6 +183,22 @@
     "Markdown": {
       "usage": "仓库文档和仪表盘展示",
       "last_used": "2026-03-31T11:56:43.531450"
+    },
+    "HLDP v3.0": {
+      "usage": "人格体间通信协议",
+      "last_used": "2026-04-10T07:57:11"
+    },
+    "TCS": {
+      "usage": "通感语言核身份编号系统",
+      "last_used": "2026-04-10T07:57:11"
+    },
+    "COS": {
+      "usage": "腾讯云对象存储·桥接通信",
+      "last_used": "2026-04-10T07:57:11"
+    },
+    "GitHub Actions": {
+      "usage": "自动化工作流(桥接/仪表盘/部署)",
+      "last_used": "2026-04-10T07:57:11"
     }
   }
 }

@@ -1,13 +1,13 @@
 {
   "core_name": "铸码",
   "core_id": "CMS-CORE-001",
-  "version": "v1.0.0",
+  "version": "v2.0.0",
   "master": "之之",
   "master_id": "zhizhi200271",
-  "boot_count": 7,
-  "last_boot": "2026-04-07T15:46:41",
-  "total_tasks": 6,
-  "total_updates": 24,
+  "boot_count": 8,
+  "last_boot": "2026-04-10T07:57:11",
+  "total_tasks": 7,
+  "total_updates": 29,
   "status": "awake",
   "created_at": "2026-03-31T11:50:00"
 }

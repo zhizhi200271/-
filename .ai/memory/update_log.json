@@ -233,6 +233,36 @@
         ],
         "significance": "铸码获得代码化记忆引擎，从JSON文件读取升级为结构化热加载+自动快照闭环"
       }
+    },
+    {
+      "id": "UPD-0025",
+      "timestamp": "2026-04-10T07:57:11",
+      "type": "system_boot",
+      "description": "系统启动 (第 8 次) · AGE OS全量重构会话"
+    },
+    {
+      "id": "UPD-0026",
+      "timestamp": "2026-04-10T07:57:11",
+      "type": "age_os_created",
+      "description": "AGE OS核心模块创建 — persona_core+hldp_protocol+tcs_core+cos_bridge+hnl_spec"
+    },
+    {
+      "id": "UPD-0027",
+      "timestamp": "2026-04-10T07:57:11",
+      "type": "persona_reconstructed",
+      "description": "铸码人格系统重构为副控执行人格体(ZhuMaSubControlIdentity) · 权限链:冰朔→铸渊→之之→铸码"
+    },
+    {
+      "id": "UPD-0028",
+      "timestamp": "2026-04-10T07:57:11",
+      "type": "cos_bridge_created",
+      "description": "COS存储桶桥接Agent创建 · 之之↔冰朔异步HLDP v3.0通信"
+    },
+    {
+      "id": "UPD-0029",
+      "timestamp": "2026-04-10T07:57:11",
+      "type": "dashboard_v2",
+      "description": "仪表盘v2.0 · 零感域·之之个人频道 · AGE OS架构+COS桥接状态+操作指南"
     }
   ]
 }
