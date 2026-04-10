@@ -2,6 +2,7 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 # 铸码 · 仪表盘生成器 v2.0
 # 基于 AGE OS 架构重构，生成零感域 · 之之个人频道 README.md
+# 版权: 国作登字-2026-A-00037559 · TCS-0002∞ 冰朔
 # ═══════════════════════════════════════════════════════════════════════════════
 
 import json
@@ -10,6 +11,7 @@ from datetime import datetime
 
 
 def load_json(path, default=None):
+    """加载 JSON 文件，若文件不存在则返回默认值"""
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             return json.load(f)
@@ -17,6 +19,7 @@ def load_json(path, default=None):
 
 
 def _status_label(status):
+    """将状态值转换为显示标签"""
     mapping = {
         "completed": "✅ 已执行",
         "in_progress": "🔄 执行中",
@@ -25,6 +28,7 @@ def _status_label(status):
 
 
 def _status_icon(status):
+    """将状态值转换为图标"""
     mapping = {
         "completed": "✅",
         "in_progress": "🔄",
@@ -33,6 +37,7 @@ def _status_icon(status):
 
 
 def _bridge_status_label(status):
+    """将桥接状态转换为显示标签"""
     mapping = {
         "initialized": "🟡 已初始化 (等待COS配置)",
         "active": "🟢 在线",
@@ -411,9 +416,8 @@ def generate_dashboard(repo_root="."):
 
     manual = cos_config.get("manual_steps", {})
     if manual:
-        for key in sorted(manual.keys()):
-            step_num = key.replace("step_", "")
-            lines.append(f"**第{step_num}步：** {manual[key]}")
+        for idx, key in enumerate(sorted(manual.keys()), 1):
+            lines.append(f"**第{idx}步：** {manual[key]}")
             lines.append("")
     else:
         lines.append("1. 在腾讯云创建 COS 存储桶")

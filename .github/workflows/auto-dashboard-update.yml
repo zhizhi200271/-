@@ -27,8 +27,8 @@ jobs:
       - name: Generate dashboard
         run: |
           echo "📊 生成仪表盘..."
-          if [ -f AGE_OS/generate_dashboard.py ]; then
-            python AGE_OS/generate_dashboard.py
+          if [ -f .ai/generate_dashboard.py ]; then
+            python .ai/generate_dashboard.py .
           else
             echo "⚠️ generate_dashboard.py not found, skipping dashboard generation"
           fi
