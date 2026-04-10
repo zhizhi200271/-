@@ -1,0 +1,43 @@
+name: "📊 Auto Dashboard Update · 仪表盘自动更新"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".ai/memory/**"
+      - "AGE_OS/**"
+
+jobs:
+  update-dashboard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate dashboard
+        run: |
+          echo "📊 生成仪表盘..."
+          if [ -f AGE_OS/generate_dashboard.py ]; then
+            python AGE_OS/generate_dashboard.py
+          else
+            echo "⚠️ generate_dashboard.py not found, skipping dashboard generation"
+          fi
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "铸码 Bot"
+          git config user.email "zhuma-bot@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "✅ 仪表盘无变化"
+          else
+            git commit -m "📊 dashboard: auto-update — $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+            git push
+          fi

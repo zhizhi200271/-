@@ -1,0 +1,62 @@
+name: "📥 COS Receive Receipt · 接收铸渊回执"
+
+on:
+  workflow_dispatch:
+    inputs:
+      receipt_path:
+        description: "COS回执路径"
+        required: true
+        type: string
+
+jobs:
+  receive-receipt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Download receipt from COS
+        env:
+          ZHIZHI_COS_SECRET_ID: ${{ secrets.ZHIZHI_COS_SECRET_ID }}
+          ZHIZHI_COS_SECRET_KEY: ${{ secrets.ZHIZHI_COS_SECRET_KEY }}
+          RECEIPT_PATH: ${{ github.event.inputs.receipt_path }}
+        run: |
+          echo "📥 接收铸渊回执: $RECEIPT_PATH"
+          mkdir -p AGE_OS/receipts
+          if [ -f AGE_OS/cos_download.py ]; then
+            python AGE_OS/cos_download.py --path "$RECEIPT_PATH" --output AGE_OS/receipts/
+          else
+            echo "⚠️ cos_download.py not found, recording receipt path"
+            echo "{\"receipt_path\": \"$RECEIPT_PATH\", \"received_at\": \"$(date -u '+%Y-%m-%dT%H:%M:%SZ')\", \"status\": \"pending_download\"}" > "AGE_OS/receipts/receipt_$(date -u '+%Y%m%d_%H%M%S').json"
+          fi
+
+      - name: Update bridge_status.json
+        run: |
+          echo "📡 更新桥接状态..."
+          mkdir -p AGE_OS
+          TIMESTAMP=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
+          cat > AGE_OS/bridge_status.json << EOF
+          {
+            "last_receipt": "${{ github.event.inputs.receipt_path }}",
+            "last_receipt_time": "${TIMESTAMP}",
+            "bridge": "active",
+            "last_check": "${TIMESTAMP}"
+          }
+          EOF
+
+      - name: Commit changes
+        run: |
+          git config user.name "铸码 Bot"
+          git config user.email "zhuma-bot@users.noreply.github.com"
+          git add AGE_OS/
+          if git diff --cached --quiet; then
+            echo "✅ 无变更需要提交"
+          else
+            git commit -m "📥 receipt: received from 铸渊 — ${{ github.event.inputs.receipt_path }}"
+            git push
+          fi

@@ -1,0 +1,98 @@
+name: "🚀 Merge Trigger · 合并后自动部署"
+
+on:
+  pull_request:
+    branches: [main]
+    types: [closed]
+
+jobs:
+  deploy-system:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run AGE OS initialization scripts
+        run: |
+          echo "🚀 合并后系统激活 — $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          for script in AGE_OS/init_*.py; do
+            if [ -f "$script" ]; then
+              echo "▶ 运行: $script"
+              python "$script"
+            fi
+          done
+          echo "✅ AGE OS 初始化完成"
+
+      - name: Update dashboard
+        run: |
+          echo "📊 更新仪表盘..."
+          if [ -f AGE_OS/generate_dashboard.py ]; then
+            python AGE_OS/generate_dashboard.py
+          else
+            echo "⚠️ generate_dashboard.py not found, skipping"
+          fi
+
+      - name: Commit system state
+        run: |
+          git config user.name "铸码 Bot"
+          git config user.email "zhuma-bot@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "✅ 系统状态无变化"
+          else
+            git commit -m "🚀 deploy: post-merge system activation — $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+            git push
+          fi
+
+  notify-bridge:
+    if: github.event.pull_request.merged == true
+    needs: deploy-system
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Send HLDP deployment notification via bridge
+        env:
+          ZHIZHI_COS_SECRET_ID: ${{ secrets.ZHIZHI_COS_SECRET_ID }}
+          ZHIZHI_COS_SECRET_KEY: ${{ secrets.ZHIZHI_COS_SECRET_KEY }}
+        run: |
+          echo "📡 发送 HLDP 部署通知到 COS 桥接..."
+          TIMESTAMP=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
+          NOTIFICATION=$(cat << EOF
+          {
+            "hldp_version": "1.0",
+            "sender": "CMS-CORE-001",
+            "sender_name": "铸码",
+            "target": "ICE-GL-ZY001",
+            "type": "deployment_notification",
+            "timestamp": "${TIMESTAMP}",
+            "payload": {
+              "event": "post_merge_deploy",
+              "pr_number": ${{ github.event.pull_request.number }},
+              "pr_title": "${{ github.event.pull_request.title }}",
+              "merged_by": "${{ github.event.pull_request.merged_by.login }}",
+              "status": "completed"
+            }
+          }
+          EOF
+          )
+          if [ -f AGE_OS/bridge_send.py ]; then
+            echo "$NOTIFICATION" | python AGE_OS/bridge_send.py
+          else
+            echo "⚠️ bridge_send.py not found, logging notification locally"
+            mkdir -p AGE_OS/notifications
+            echo "$NOTIFICATION" > "AGE_OS/notifications/deploy_$(date -u '+%Y%m%d_%H%M%S').json"
+          fi
+          echo "✅ HLDP 通知已发送"
