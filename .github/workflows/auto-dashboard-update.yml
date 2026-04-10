@@ -7,6 +7,9 @@ on:
       - ".ai/memory/**"
       - "AGE_OS/**"
 
+permissions:
+  contents: write
+
 jobs:
   update-dashboard:
     runs-on: ubuntu-latest

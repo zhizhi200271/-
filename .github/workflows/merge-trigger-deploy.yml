@@ -5,6 +5,9 @@ on:
     branches: [main]
     types: [closed]
 
+permissions:
+  contents: write
+
 jobs:
   deploy-system:
     if: github.event.pull_request.merged == true
@@ -42,7 +45,7 @@ jobs:
         run: |
           git config user.name "铸码 Bot"
           git config user.email "zhuma-bot@users.noreply.github.com"
-          git add -A
+          git add AGE_OS/*.json AGE_OS/*.md .ai/memory/*.json 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "✅ 系统状态无变化"
           else
@@ -72,7 +75,7 @@ jobs:
           TIMESTAMP=$(date -u '+%Y-%m-%dT%H:%M:%SZ')
           NOTIFICATION=$(cat << EOF
           {
-            "hldp_version": "1.0",
+            "hldp_v": "3.0",
             "sender": "CMS-CORE-001",
             "sender_name": "铸码",
             "target": "ICE-GL-ZY001",
