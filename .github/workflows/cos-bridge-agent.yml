@@ -1,0 +1,67 @@
+name: "🌉 COS Bridge Agent · 铸码桥接守护"
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run AGE_OS bridge heartbeat
+        env:
+          ZHIZHI_COS_SECRET_ID: ${{ secrets.ZHIZHI_COS_SECRET_ID }}
+          ZHIZHI_COS_SECRET_KEY: ${{ secrets.ZHIZHI_COS_SECRET_KEY }}
+        run: |
+          echo "🌉 铸码桥接心跳 — $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+          if [ -f AGE_OS/bridge_heartbeat.py ]; then
+            python AGE_OS/bridge_heartbeat.py
+          else
+            echo "⚠️ bridge_heartbeat.py not found, sending basic heartbeat"
+            echo "{\"status\": \"alive\", \"timestamp\": \"$(date -u '+%Y-%m-%dT%H:%M:%SZ')\", \"node\": \"ZHIZHI-NODE-001\"}" > AGE_OS/bridge_status.json
+          fi
+
+  sync-status:
+    runs-on: ubuntu-latest
+    needs: heartbeat
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run bridge status check
+        run: |
+          echo "📡 检查桥接状态..."
+          if [ -f AGE_OS/bridge_status.json ]; then
+            echo "当前桥接状态:"
+            cat AGE_OS/bridge_status.json
+          else
+            echo "⚠️ 无桥接状态文件，创建初始状态"
+            mkdir -p AGE_OS
+            echo "{\"bridge\": \"initialized\", \"last_check\": \"$(date -u '+%Y-%m-%dT%H:%M:%SZ')\"}" > AGE_OS/bridge_status.json
+          fi
+
+      - name: Commit status update if changed
+        run: |
+          git config user.name "铸码 Bot"
+          git config user.email "zhuma-bot@users.noreply.github.com"
+          git add AGE_OS/bridge_status.json
+          if git diff --cached --quiet; then
+            echo "✅ 桥接状态无变化"
+          else
+            git commit -m "🌉 bridge: update bridge status — $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+            git push
+          fi

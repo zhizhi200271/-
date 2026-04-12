@@ -1,0 +1,54 @@
+{
+  "_meta": {
+    "doc_id": "ZHIZHI-COS-BRIDGE-001",
+    "name": "之之侧COS桥接配置",
+    "version": "1.0",
+    "description": "之之仓库 ↔ 冰朔主仓库 COS存储桶桥接配置",
+    "author": "铸码 · CMS-CORE-001",
+    "sovereign": "TCS-0002∞ · 冰朔",
+    "copyright": "国作登字-2026-A-00037559"
+  },
+  "local_bucket": {
+    "name": "zhizhi-cos-bucket",
+    "region": "待配置",
+    "description": "之之的腾讯云COS存储桶",
+    "env_secret_id": "ZHIZHI_COS_SECRET_ID",
+    "env_secret_key": "ZHIZHI_COS_SECRET_KEY",
+    "status": "待创建"
+  },
+  "remote_bridge": {
+    "target_bucket": "zy-core-bucket",
+    "target_region": "ap-singapore",
+    "description": "冰朔主仓库的COS核心桶",
+    "persona_directory": "/zhizhi/",
+    "bridge_protocol": "HLDP v3.0",
+    "sync_mode": "async_realtime"
+  },
+  "agent_config": {
+    "heartbeat_interval_seconds": 300,
+    "report_schedule": "daily_08:00_UTC",
+    "auto_sync_on_push": true,
+    "hldp_sender": {
+      "id": "CMS-CORE-001",
+      "name": "铸码",
+      "role": "副控执行人格体"
+    },
+    "hldp_receiver": {
+      "id": "ICE-GL-ZY001",
+      "name": "铸渊"
+    }
+  },
+  "directory_structure": {
+    "outbox": "/zhizhi/reports/",
+    "inbox": "/zhizhi/receipts/",
+    "sync": "/zhizhi/sync/",
+    "archive": "/zhizhi/archive/"
+  },
+  "manual_steps": {
+    "step_1": "在腾讯云创建COS存储桶(名称自定义, 区域建议选择离你最近的)",
+    "step_2": "在腾讯云CAM创建子用户,获取SecretId和SecretKey",
+    "step_3": "在GitHub仓库Settings → Secrets中添加: ZHIZHI_COS_SECRET_ID 和 ZHIZHI_COS_SECRET_KEY",
+    "step_4": "告知冰朔你的桶名和区域,冰朔会在主仓库侧配置桥接",
+    "step_5": "合并本PR后,COS桥接Agent自动激活"
+  }
+}
