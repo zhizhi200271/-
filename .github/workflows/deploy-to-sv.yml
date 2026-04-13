@@ -1,0 +1,39 @@
+name: Deploy · 部署到硅谷服务器
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'package.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 部署到硅谷服务器
+        uses: appleboy/ssh-action@v1
+        with:
+          host: $ secrets.QQ_SVR_SV_HOST 
+          username: $ secrets.QQ_SVR_SV_USER 
+          key: $ secrets.QQ_SVR_SV_KEY 
+          script: |
+            mkdir -p /opt/qiuqiu/app
+            cd /opt/qiuqiu/app
+            git pull origin main 2>/dev/null || \
+              git clone https://github.com/zhizhi200271/-.git . 2>/dev/null || \
+              echo "⚠️ 请检查仓库权限"
+            npm install --production 2>/dev/null || echo "⚠️ 暂无package.json"
+            cat > /opt/qiuqiu/config/.env.app << 'ENVEOF'
+            QQ_APP_PORT=3900
+            QQ_NODE_ENV=production
+            ENVEOF
+            pm2 restart qiuqiu-darkcore 2>/dev/null || echo "✅ 等待首次部署启动"
+            pm2 save 2>/dev/null || true
+            echo "✅ 秋秋暗核频道部署完成"
