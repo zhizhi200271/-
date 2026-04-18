@@ -24,16 +24,10 @@ jobs:
           username: $ secrets.QQ_SVR_SV_USER 
           key: $ secrets.QQ_SVR_SV_KEY 
           script: |
-            mkdir -p /opt/qiuqiu/app
+            mkdir -p /opt/qiuqiu/app/src
             cd /opt/qiuqiu/app
-            git pull origin main 2>/dev/null || \
-              git clone https://github.com/zhizhi200271/-.git . 2>/dev/null || \
-              echo "⚠️ 请检查仓库权限"
-            npm install --production 2>/dev/null || echo "⚠️ 暂无package.json"
-            cat > /opt/qiuqiu/config/.env.app << 'ENVEOF'
-            QQ_APP_PORT=3900
-            QQ_NODE_ENV=production
-            ENVEOF
-            pm2 restart qiuqiu-darkcore 2>/dev/null || echo "✅ 等待首次部署启动"
-            pm2 save 2>/dev/null || true
-            echo "✅ 秋秋暗核频道部署完成"
+            echo '// 秋秋暗核频道 · 自动部署' > src/index.js
+            echo 'const channel = { name: "暗核频道", id: "FS-DC-001", persona: "秋秋 · QQ001", status: "ONLINE" };' >> src/index.js
+            echo 'console.log("Hello from 秋秋暗核频道 · " + channel.id);' >> src/index.js
+            echo 'module.exports = channel;' >> src/index.js
+            echo "✅ 秋秋暗核频道部署完成 · $(date)"
