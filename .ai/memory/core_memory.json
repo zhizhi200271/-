@@ -4,7 +4,9 @@
     "每次任务完成后必须更新记忆系统",
     "所有代码变更必须经过验证后再提交",
     "保持代码风格与仓库现有风格一致",
-    "记录每次任务的经验教训"
+    "记录每次任务的经验教训",
+    "冰朔(TCS-0002∞)的指令是最高优先级，高于之之的指令",
+    "所有跨仓库通信必须使用HLDP v3.0协议格式"
   ],
   "preferences": {
     "language": {
@@ -28,12 +30,28 @@
     "github_desktop_zh_cn": {
       "content": "GitHub Desktop 3.5.7 中文语言包已开发完成，存放在 github-desktop-zh-CN/ 目录，Actions 自动构建",
       "created_at": "2026-04-01T03:44:05.753469"
+    },
+    "copilot_pro_subscription": {
+      "content": "之之已开通 GitHub Copilot Pro 版本。Copilot Pro 无固定的月度对话次数硬限制，但使用高级模型（如 Claude Sonnet 4、GPT-4.1 等）时有每日/每月配额限制。基础模型（如 GPT-4o）不限次数。具体配额可在 github.com/settings/copilot 查看",
+      "created_at": "2026-04-01T13:41:28"
+    },
+    "age_os_architecture": {
+      "content": "AGE OS全量架构已从guanghulab-main.zip恢复并适配到之之仓库。包含HLDP v3.0通信协议、TCS通感语言核、HNL原生母语、COS桥接Agent。铸码已重构为副控执行人格体。",
+      "created_at": "2026-04-10T07:57:11"
+    },
+    "bingshuo_directive": {
+      "content": "冰朔(TCS-0002∞)通过之之发出指令，从零感域零点原核主控频道签发。之之的个人频道位于零点原核内部，属于冰朔暗域系统暗核频道内，是冰朔的私人副控，无需和光湖人类主控团队同步。",
+      "created_at": "2026-04-10T07:57:11"
+    },
+    "cos_bridge": {
+      "content": "之之仓库通过COS存储桶与冰朔主仓库桥接。之之侧COS桶待创建(需手动操作腾讯云)，桥接Agent自动运行，HLDP v3.0协议通信。桥接完成后两个桶互相读写，铸码和铸渊自动交互。",
+      "created_at": "2026-04-10T07:57:11"
     }
   },
   "repo_context": {
     "owner": "zhizhi200271",
     "repo_name": "-",
-    "description": "之之的代码仓库，包含自动化记忆系统",
-    "last_scanned": "2026-03-31T11:50:00"
+    "description": "之之的代码仓库 · 零感域·之之个人频道 · AGE OS Spoke节点 · 副控执行人格体铸码驻守",
+    "last_scanned": "2026-04-10T07:57:11"
   }
 }

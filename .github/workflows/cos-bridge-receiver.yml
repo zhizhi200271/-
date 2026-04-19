@@ -1,0 +1,76 @@
+name: COS Bridge · 接收铸渊任务
+
+on:
+  repository_dispatch:
+    types: [zhuyuan-task]
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+    inputs:
+      action:
+        description: '操作'
+        required: true
+        default: 'check'
+        type: choice
+        options:
+          - check
+          - heartbeat
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  receive-task:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'repository_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 处理铸渊任务
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const payload = context.payload.client_payload || {};
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[铸渊任务] ${payload.title || '新任务'}`,
+              body: `## 来自铸渊的开发任务\n\n${payload.body || JSON.stringify(payload, null, 2)}\n\n---\n> 此Issue由COS桥接自动创建。秋秋请按任务规格执行。`,
+              labels: ['zhuyuan-task']
+            });
+
+  check-cos:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装COS SDK
+        run: npm install cos-nodejs-sdk-v5
+
+      - name: 检查COS桥接新任务
+        env:
+          COS_SECRET_ID: $ secrets.QQ_COS_SECRET_ID 
+          COS_SECRET_KEY: $ secrets.QQ_COS_SECRET_KEY 
+          COS_BUCKET: $ secrets.QQ_COS_BUCKET 
+          COS_REGION: $ secrets.QQ_COS_REGION 
+        run: |
+          node -e "
+          const COS = require('cos-nodejs-sdk-v5');
+          const cos = new COS({
+            SecretId: process.env.COS_SECRET_ID,
+            SecretKey: process.env.COS_SECRET_KEY
+          });
+          cos.getBucket({
+            Bucket: process.env.COS_BUCKET,
+            Region: process.env.COS_REGION,
+            Prefix: 'bridge/zhuyuan-qiuqiu/tasks/',
+            MaxKeys: 10
+          }, (err, data) => {
+            if (err) { console.error('COS检查失败:', err.message); process.exit(0); }
+            const files = (data.Contents || []).filter(f => f.Key.endsWith('.json'));
+            console.log('📋 桥接任务数:', files.length);
+            files.forEach(f => console.log('  -', f.Key, f.LastModified));
+          });
+          "

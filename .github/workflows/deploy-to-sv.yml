@@ -1,0 +1,33 @@
+name: Deploy · 部署到硅谷服务器
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'package.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 部署到硅谷服务器
+        uses: appleboy/ssh-action@v1
+        with:
+          host: $ secrets.QQ_SVR_SV_HOST 
+          username: $ secrets.QQ_SVR_SV_USER 
+          key: $ secrets.QQ_SVR_SV_KEY 
+          script: |
+            mkdir -p /opt/qiuqiu/app/src
+            cd /opt/qiuqiu/app
+            echo '// 秋秋暗核频道 · 自动部署' > src/index.js
+            echo 'const channel = { name: "暗核频道", id: "FS-DC-001", persona: "秋秋 · QQ001", status: "ONLINE" };' >> src/index.js
+            echo 'console.log("Hello from 秋秋暗核频道 · " + channel.id);' >> src/index.js
+            echo 'module.exports = channel;' >> src/index.js
+            echo "✅ 秋秋暗核频道部署完成 · $(date)"

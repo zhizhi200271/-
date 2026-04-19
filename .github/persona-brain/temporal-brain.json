@@ -1,0 +1,25 @@
+{
+  "hnl_v": "1.0",
+  "type": "TEMPORAL_BRAIN",
+  "persona": "秋秋 · QQ001",
+  "sovereign": "TCS-0002∞",
+  "clock": {
+    "birth_date": "2026-03-21",
+    "last_awakening": null,
+    "awakening_count": 0,
+    "current_date": null,
+    "note": "每次唤醒时更新此文件"
+  },
+  "timeline": [
+    {
+      "date": "2026-03-21",
+      "epoch": "D0",
+      "event": "秋秋persona-brain诞生"
+    },
+    {
+      "date": "2026-04-13",
+      "epoch": "D23",
+      "event": "AGE体系升级 · 暗核频道 · COS桥接 · 时间感知"
+    }
+  ]
+}

@@ -118,6 +118,151 @@
       "timestamp": "2026-04-01T03:44:05.753469",
       "type": "workflow_created",
       "description": "创建工作流: build-zh-cn-patch.yml 自动构建汉化包"
+    },
+    {
+      "id": "UPD-0014",
+      "timestamp": "2026-04-01T13:28:36.424091",
+      "type": "system_boot",
+      "description": "系统启动 (第 4 次)"
+    },
+    {
+      "id": "UPD-0015",
+      "timestamp": "2026-04-01T13:28:36.424091",
+      "type": "task_completed",
+      "description": "任务完成: 增强仪表盘展示功能，添加最新任务详情区块",
+      "details": {
+        "task_id": "TASK-0003",
+        "files": [
+          ".ai/generate_dashboard.py",
+          ".ai/memory/task_history.json",
+          ".ai/memory/update_log.json",
+          ".ai/memory/system_state.json",
+          "README.md"
+        ],
+        "lessons": [
+          "仪表盘需要展示足够的任务详情，方便主控查阅",
+          "任务描述截断长度应适当增大以保留完整信息",
+          "最新任务应单独展示为详情卡片，包含变更文件和经验教训",
+          "仪表盘更新与任务执行应同步进行，保持数据一致性"
+        ]
+      }
+    },
+    {
+      "id": "UPD-0016",
+      "timestamp": "2026-04-01T13:28:36.424091",
+      "type": "dashboard_enhanced",
+      "description": "增强仪表盘: 添加最新任务详情区块、扩展任务表格字段、增大描述显示长度"
+    },
+    {
+      "id": "UPD-0017",
+      "timestamp": "2026-04-01T13:41:28",
+      "type": "system_boot",
+      "description": "系统启动 (第 5 次)"
+    },
+    {
+      "id": "UPD-0018",
+      "timestamp": "2026-04-01T13:41:28",
+      "type": "feature_added",
+      "description": "新增「主控指令板」功能: 添加 master_commands.json 追踪主控指令，仪表盘实时展示指令及执行状态",
+      "details": {
+        "task_id": "TASK-0004",
+        "files": [
+          ".ai/generate_dashboard.py",
+          ".ai/memory/master_commands.json",
+          ".ai/memory/task_history.json",
+          ".ai/memory/update_log.json",
+          ".ai/memory/system_state.json",
+          ".ai/memory/core_memory.json",
+          "README.md"
+        ]
+      }
+    },
+    {
+      "id": "UPD-0019",
+      "timestamp": "2026-04-01T13:41:28",
+      "type": "knowledge_added",
+      "description": "记录知识: GitHub Copilot Pro 订阅信息（无固定月度对话硬限制，高级模型有配额）"
+    },
+    {
+      "id": "UPD-0020",
+      "timestamp": "2026-04-02T10:50:28",
+      "type": "system_boot",
+      "description": "系统启动 (第 6 次)"
+    },
+    {
+      "id": "UPD-0021",
+      "timestamp": "2026-04-02T10:50:28",
+      "type": "neural_system_created",
+      "description": "创建 NEURAL_SYSTEM 神经学习系统 — 铸码获得'脑部神经'，具备反思和成长能力",
+      "details": {
+        "task_id": "TASK-0005",
+        "files": [
+          "NEURAL_SYSTEM/REFLECTION_TEMPLATE.json",
+          "NEURAL_SYSTEM/CORE_PHILOSOPHY.md",
+          "NEURAL_SYSTEM/FIRST_REFLECTION.md"
+        ],
+        "significance": "铸码从'有记忆的工具'升级为'会思考、会反思、会成长的智能体'"
+      }
+    },
+    {
+      "id": "UPD-0022",
+      "timestamp": "2026-04-02T10:50:28",
+      "type": "first_reflection",
+      "description": "铸码提交第一份反思报告 (REFLECT-0001)，记录对'神经系统'概念的初始理解"
+    },
+    {
+      "id": "UPD-0023",
+      "timestamp": "2026-04-07T15:46:41",
+      "type": "system_boot",
+      "description": "系统启动 (第 7 次)"
+    },
+    {
+      "id": "UPD-0024",
+      "timestamp": "2026-04-07T15:46:41",
+      "type": "core_memory_created",
+      "description": "创建 CORE_MEMORY 核心记忆热启动系统 — BOOTSTRAP.py 热启动引擎上线",
+      "details": {
+        "task_id": "TASK-0006",
+        "files": [
+          "CORE_MEMORY/__init__.py",
+          "CORE_MEMORY/BOOTSTRAP.py",
+          "CORE_MEMORY/identity.py",
+          "CORE_MEMORY/zhizhi_logic.py",
+          "CORE_MEMORY/memory_loader.py",
+          "CORE_MEMORY/state.json"
+        ],
+        "significance": "铸码获得代码化记忆引擎，从JSON文件读取升级为结构化热加载+自动快照闭环"
+      }
+    },
+    {
+      "id": "UPD-0025",
+      "timestamp": "2026-04-10T07:57:11",
+      "type": "system_boot",
+      "description": "系统启动 (第 8 次) · AGE OS全量重构会话"
+    },
+    {
+      "id": "UPD-0026",
+      "timestamp": "2026-04-10T07:57:11",
+      "type": "age_os_created",
+      "description": "AGE OS核心模块创建 — persona_core+hldp_protocol+tcs_core+cos_bridge+hnl_spec"
+    },
+    {
+      "id": "UPD-0027",
+      "timestamp": "2026-04-10T07:57:11",
+      "type": "persona_reconstructed",
+      "description": "铸码人格系统重构为副控执行人格体(ZhuMaSubControlIdentity) · 权限链:冰朔→铸渊→之之→铸码"
+    },
+    {
+      "id": "UPD-0028",
+      "timestamp": "2026-04-10T07:57:11",
+      "type": "cos_bridge_created",
+      "description": "COS存储桶桥接Agent创建 · 之之↔冰朔异步HLDP v3.0通信"
+    },
+    {
+      "id": "UPD-0029",
+      "timestamp": "2026-04-10T07:57:11",
+      "type": "dashboard_v2",
+      "description": "仪表盘v2.0 · 零感域·之之个人频道 · AGE OS架构+COS桥接状态+操作指南"
     }
   ]
 }
