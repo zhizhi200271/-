@@ -74,12 +74,39 @@ else
     exit 1
 fi
 
+# ── 检测是否需要管理员权限 ─────────────────────────────────────
+SUDO=""
+if [ -n "$ASAR_PATH" ]; then
+    WRITE_TEST_DIR="$(dirname "$ASAR_PATH")"
+else
+    WRITE_TEST_DIR="$APP_DIR"
+fi
+if ! [ -w "$WRITE_TEST_DIR" ]; then
+    SUDO="sudo"
+    warn "修改 GitHub Desktop 文件需要管理员权限，可能会要求输入密码"
+    if ! sudo -v 2>/dev/null; then
+        fail "无法获取管理员权限！"
+        warn "请尝试以下方式运行："
+        warn "  curl -fsSL https://raw.githubusercontent.com/zhizhi200271/-/main/github-desktop-zh-CN/scripts/apply-patch.sh -o /tmp/apply-patch.sh && sudo bash /tmp/apply-patch.sh"
+        exit 1
+    fi
+fi
+
 # ── 备份 ──────────────────────────────────────────────────────
 title "步骤 2/5: 创建原始文件备份"
 if [ -n "$ASAR_PATH" ]; then
     BACKUP_PATH="${ASAR_PATH}.zh-cn-backup"
     if [ ! -f "$BACKUP_PATH" ]; then
-        cp "$ASAR_PATH" "$BACKUP_PATH"
+        $SUDO cp "$ASAR_PATH" "$BACKUP_PATH"
+        ok "备份已创建: $BACKUP_PATH"
+    else
+        warn "备份已存在，跳过"
+    fi
+else
+    BACKUP_PATH="${APP_DIR}.zh-cn-backup"
+    if [ ! -d "$BACKUP_PATH" ]; then
+        info "正在备份 app 目录..."
+        $SUDO cp -R "$APP_DIR" "$BACKUP_PATH"
         ok "备份已创建: $BACKUP_PATH"
     else
         warn "备份已存在，跳过"
@@ -221,20 +248,33 @@ if [ -n "$ASAR_PATH" ]; then
 
     # 重新打包
     info "正在重新打包 app.asar..."
-    if npx --yes @electron/asar pack "$TEMP_EXTRACT" "$ASAR_PATH" 2>/dev/null; then
+    TEMP_ASAR="/tmp/github-desktop-patched-$$.asar"
+    if npx --yes @electron/asar pack "$TEMP_EXTRACT" "$TEMP_ASAR" 2>/dev/null; then
+        $SUDO cp -f "$TEMP_ASAR" "$ASAR_PATH"
+        rm -f "$TEMP_ASAR"
         ok "app.asar 重新打包完成"
     else
         fail "重新打包失败！正在恢复备份..."
-        cp "$BACKUP_PATH" "$ASAR_PATH"
+        $SUDO cp -f "$BACKUP_PATH" "$ASAR_PATH"
         ok "已恢复英文版本"
-        rm -rf "$TEMP_EXTRACT" "$TEMP_PATCH"
+        rm -rf "$TEMP_EXTRACT" "$TEMP_PATCH" "$TEMP_ASAR"
         exit 1
     fi
 
     rm -rf "$TEMP_EXTRACT"
 else
-    # 直接补丁目录
-    node "$TEMP_PATCH" "$TRANS_PATH" "$APP_DIR"
+    # 未打包模式：复制到临时目录打补丁，再复制回去
+    TEMP_APP="/tmp/github-desktop-unpacked-$$"
+    info "正在复制 app 目录到临时目录..."
+    cp -R "$APP_DIR" "$TEMP_APP"
+
+    node "$TEMP_PATCH" "$TRANS_PATH" "$TEMP_APP"
+
+    info "正在将补丁后的文件复制回原位..."
+    $SUDO cp -Rf "$TEMP_APP/." "$APP_DIR/"
+    ok "补丁文件已复制回原位"
+
+    rm -rf "$TEMP_APP"
 fi
 
 rm -f "$TEMP_PATCH"
@@ -248,5 +288,9 @@ echo "  1. 重新启动 GitHub Desktop"
 echo "  2. 界面将显示简体中文"
 echo ""
 echo "  📌 如需恢复英文版本:"
-echo "  cp \"${ASAR_PATH}.zh-cn-backup\" \"${ASAR_PATH}\""
+if [ -n "$ASAR_PATH" ]; then
+    echo "  ${SUDO:+sudo }cp \"${BACKUP_PATH}\" \"${ASAR_PATH}\""
+else
+    echo "  ${SUDO:+sudo }rm -rf \"${APP_DIR}\" && ${SUDO:+sudo }cp -R \"${BACKUP_PATH}\" \"${APP_DIR}\""
+fi
 echo ""
